@@ -20,7 +20,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Use dune
-        uses: shym/setup-dune@v0
+        uses: ocaml-dune/setup-dune@v0
         with:
           automagic: true
 ```
@@ -41,7 +41,7 @@ Only one output for now.
 
 Contributions are most welcome!
 
-- [File issues](https://github.com/shym/setup-dune/issues) to report bugs or feature requests.
+- [File issues](https://github.com/ocaml-dune/setup-dune/issues) to report bugs or feature requests.
 - [Contribute code or documentation](./CONTRIBUTING.md).
 
 ---
