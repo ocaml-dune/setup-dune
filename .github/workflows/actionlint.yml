@@ -1,0 +1,17 @@
+name: Lint Action Files
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Lint action.yml files with actionlint
+        uses: rhysd/actionlint@v1.7.7
