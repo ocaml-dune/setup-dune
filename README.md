@@ -33,9 +33,35 @@ Only one input for now.
 
 ## Outputs
 
-Only one output for now.
-
 - `dune-cache-hit`: reports whether the Dune cache was found in the GitHub Action cache.
+- `dune-cache-primary-key`: the primary key used for the Dune cache. See [Customizing the Caching Strategy](#customizing-the-caching-strategy).
+- `dune-cache-root`: the path to the Dune cache root directory. See [Customizing the Caching Strategy](#customizing-the-caching-strategy).
+
+## Customizing the Caching Strategy
+
+Advanced users may want to manage the Dune cache themselves, for example to save the cache after additional steps or with a custom key. You can use the `dune-cache-root` and `dune-cache-primary-key` outputs to do this. Here is an example of how to save the cache manually in your workflow:
+
+```yaml
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Use dune
+        id: setup-dune
+        uses: ocaml-dune/setup-dune@v0
+        with:
+          automagic: false
+      # ... your custom build/test steps ...
+      - name: Save Dune cache
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ steps.setup-dune.outputs.dune-cache-root }}
+          key: ${{ steps.setup-dune.outputs.dune-cache-primary-key }}
+```
+
+This approach gives you full control over when and how the cache is saved.
 
 ## Contributions
 

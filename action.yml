@@ -3,13 +3,19 @@ description: Install Dune (developer preview)
 author: Samuel Hym
 inputs:
   automagic:
-    description: 'Whether to run automatically all the standard lock, build, test steps'
+    description: "Whether to run automatically all the standard lock, build, test steps"
     required: false
-    default: 'false'
+    default: "false"
 outputs:
   dune-cache-hit:
     description: "A boolean value to indicate the Dune cache was found in the GHA cache"
     value: ${{ steps.dune-cache.outputs.cache-hit }}
+  dune-cache-primary-key:
+    description: "The primary key used for the Dune cache. Useful for advanced cache management."
+    value: ${{ steps.dune-cache.outputs.cache-primary-key }}
+  dune-cache-root:
+    description: "The path to the Dune cache root directory. Useful for advanced cache management."
+    value: ${{ env.DUNE_CACHE_ROOT }}
 runs:
   using: "composite"
   steps:
@@ -19,12 +25,11 @@ runs:
         curl -fsSL https://get.dune.build/install | sh
         echo "$HOME/.local/bin" >> "$GITHUB_PATH"
         echo "DUNE_CACHE_ROOT=$HOME/.cache/dune" >> "$GITHUB_ENV"
-    - name: Cache dune’s cache
-      uses: actions/cache@v4
+    - name: Restore dune cache
       id: dune-cache
+      uses: actions/cache/restore@v4
       with:
-        path: |
-          ${{ env.DUNE_CACHE_ROOT }}
+        path: ${{ env.DUNE_CACHE_ROOT }}
         key: dune-cache-${{ runner.os }}-${{ runner.arch }}
     - name: Resolve dependencies
       shell: bash
@@ -41,3 +46,9 @@ runs:
       run: |
         dune runtest
       if: inputs.automagic == 'true'
+    - name: Save dune cache
+      if: inputs.automagic == 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: ${{ env.DUNE_CACHE_ROOT }}
+        key: ${{ steps.dune-cache.outputs.cache-primary-key }}
