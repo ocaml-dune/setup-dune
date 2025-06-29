@@ -3,9 +3,13 @@ description: Install Dune (developer preview)
 author: Samuel Hym
 inputs:
   automagic:
-    description: 'Whether to run automatically all the standard lock, build, test steps'
+    description: "Whether to run automatically all the standard lock, build, test steps"
     required: false
-    default: 'false'
+    default: "false"
+  install-depexts:
+    description: "Whether to automatically install system dependencies (depexts) using `dune show depexts`."
+    required: false
+    default: "false"
 outputs:
   dune-cache-hit:
     description: "A boolean value to indicate the Dune cache was found in the GHA cache"
@@ -31,6 +35,13 @@ runs:
       run: |
         dune pkg lock
       if: inputs.automagic == 'true'
+    - name: Install depexts
+      shell: bash
+      run: |
+        bash "${{ github.action_path }}/install-depexts.sh"
+      env:
+        RUNNER_OS: ${{ runner.os }}
+      if: inputs.install-depexts == 'true'
     - name: Build project
       shell: bash
       run: |
