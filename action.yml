@@ -25,13 +25,12 @@ runs:
       run: |
         curl -fsSL https://get.dune.build/install | sh
         echo "$HOME/.local/bin" >> "$GITHUB_PATH"
-        echo "DUNE_CACHE_ROOT=$HOME/.cache/dune" >> "$GITHUB_ENV"
         echo "dune-cache-root=$HOME/.cache/dune" >> "$GITHUB_OUTPUT"
     - name: Restore dune cache
       id: dune-cache
       uses: actions/cache/restore@v4
       with:
-        path: ${{ env.DUNE_CACHE_ROOT }}
+        path: ${{ steps.setup-dune.outputs.dune-cache-root }}
         key: dune-cache-${{ runner.os }}-${{ runner.arch }}
     - name: Resolve dependencies
       shell: bash
@@ -52,5 +51,5 @@ runs:
       if: inputs.automagic == 'true'
       uses: actions/cache/save@v4
       with:
-        path: ${{ env.DUNE_CACHE_ROOT }}
+        path: ${{ steps.setup-dune.outputs.dune-cache-root }}
         key: ${{ steps.dune-cache.outputs.cache-primary-key }}
