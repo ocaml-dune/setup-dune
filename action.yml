@@ -15,16 +15,18 @@ outputs:
     value: ${{ steps.dune-cache.outputs.cache-primary-key }}
   dune-cache-root:
     description: "The path to the Dune cache root directory. Useful for advanced cache management."
-    value: ${{ env.DUNE_CACHE_ROOT }}
+    value: ${{ steps.setup-dune.outputs.dune-cache-root }}
 runs:
   using: "composite"
   steps:
     - name: Install and setup dune
+      id: setup-dune
       shell: bash
       run: |
         curl -fsSL https://get.dune.build/install | sh
         echo "$HOME/.local/bin" >> "$GITHUB_PATH"
         echo "DUNE_CACHE_ROOT=$HOME/.cache/dune" >> "$GITHUB_ENV"
+        echo "dune-cache-root=$HOME/.cache/dune" >> "$GITHUB_OUTPUT"
     - name: Restore dune cache
       id: dune-cache
       uses: actions/cache/restore@v4
