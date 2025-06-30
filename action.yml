@@ -38,7 +38,7 @@ runs:
     - name: Install depexts
       shell: bash
       run: |
-        bash "${{ github.action_path }}/install-depexts.sh"
+        ${{ github.action_path }}/install-depexts.sh
       env:
         RUNNER_OS: ${{ runner.os }}
       if: inputs.install-depexts == 'true'
