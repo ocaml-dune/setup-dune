@@ -22,13 +22,22 @@ runs:
       shell: bash
       run: |
         set -e
-        GPATCH_GNUBIN="/opt/homebrew/opt/gpatch/libexec/gnubin"
         brew update
         brew install gpatch
-        if [ "${ACTIONS_STEP_DEBUG:-false}" = "true" ]; then
-          echo "Contents of $GPATCH_GNUBIN:"
-          ls -l "$GPATCH_GNUBIN"
+        # Apple Silicon (macos-latest, macos-14)
+        if [ -d "/opt/homebrew/opt/gpatch/libexec/gnubin" ]; then
+          GPATCH_GNUBIN="/opt/homebrew/opt/gpatch/libexec/gnubin"
+        # Intel (macos-13)
+        elif [ -d "/usr/local/opt/gpatch/libexec/gnubin" ]; then
+          GPATCH_GNUBIN="/usr/local/opt/gpatch/libexec/gnubin"
+        else
+          echo "::error::gpatch gnubin directory not found!"
+          exit 1
         fi
+        DIR_CONTENTS="$(ls -l "$GPATCH_GNUBIN")"
+        while IFS= read -r line; do
+          echo "::debug::$line"
+        done <<< "$DIR_CONTENTS"
         echo "$GPATCH_GNUBIN" >> $GITHUB_PATH
         patch --version
     - name: Install and setup dune
