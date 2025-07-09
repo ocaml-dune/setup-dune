@@ -19,7 +19,7 @@ else
 fi
 rm -f "$DEPEXT_TEMPFILE"
 
-echo "[install-depexts] DEPEXT_LIST='$(printf '%s' "$DEPEXT_LIST" | sed ':a;N;$!ba;s/\n/\\n/g')'"
+echo "[install-depexts] DEPEXT_LIST='$(printf '%s' "$DEPEXT_LIST" | awk '{printf "%s\\n", $0}')'"
 
 if [ -z "$DEPEXT_LIST" ]; then
   echo "::debug::[install-depexts] No depexts to install."
