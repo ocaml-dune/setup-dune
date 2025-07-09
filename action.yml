@@ -3,9 +3,13 @@ description: Install Dune (developer preview)
 author: Samuel Hym
 inputs:
   automagic:
-    description: 'Whether to run automatically all the standard lock, build, test steps'
+    description: "Whether to run automatically all the standard lock, build, test steps"
     required: false
-    default: 'false'
+    default: "false"
+  install-patch-on-macOS:
+    description: "Whether to brew install gpatch on macOS (required to build some opam packages)"
+    required: false
+    default: "true"
 outputs:
   dune-cache-hit:
     description: "A boolean value to indicate the Dune cache was found in the GHA cache"
@@ -13,6 +17,20 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - name: Install gpatch and add to PATH on macOS
+      if: inputs.install-patch-on-macOS == 'true' && runner.os == 'macOS'
+      shell: bash
+      run: |
+        set -e
+        GPATCH_GNUBIN="/opt/homebrew/opt/gpatch/libexec/gnubin"
+        brew update
+        brew install gpatch
+        if [ "${ACTIONS_STEP_DEBUG:-false}" = "true" ]; then
+          echo "Contents of $GPATCH_GNUBIN:"
+          ls -l "$GPATCH_GNUBIN"
+        fi
+        echo "$GPATCH_GNUBIN" >> $GITHUB_PATH
+        patch --version
     - name: Install and setup dune
       shell: bash
       run: |
