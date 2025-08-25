@@ -6,6 +6,10 @@ inputs:
     description: 'Whether to run automatically all the standard lock, build, test steps'
     required: false
     default: 'false'
+  directory:
+    description: 'Directory in which dune should be run'
+    required: false
+    default: '.'
 outputs:
   dune-cache-hit:
     description: 'A boolean value to indicate the Dune cache was found in the GHA cache'
@@ -28,16 +32,22 @@ runs:
         key: dune-cache-${{ runner.os }}-${{ runner.arch }}
     - name: Resolve dependencies
       shell: bash
+      env:
+        SETUPDUNEDIR: ${{ inputs.directory }}
       run: |
-        dune pkg lock
+        cd "$SETUPDUNEDIR" && dune pkg lock
       if: inputs.automagic == 'true'
     - name: Build project
       shell: bash
+      env:
+        SETUPDUNEDIR: ${{ inputs.directory }}
       run: |
-        dune build
+        cd "$SETUPDUNEDIR" && dune build
       if: inputs.automagic == 'true'
     - name: Run tests
       shell: bash
+      env:
+        SETUPDUNEDIR: ${{ inputs.directory }}
       run: |
-        dune runtest
+        cd "$SETUPDUNEDIR" && dune runtest
       if: inputs.automagic == 'true'
