@@ -8,10 +8,10 @@ inputs:
     default: 'false'
 outputs:
   dune-cache-hit:
-    description: "A boolean value to indicate the Dune cache was found in the GHA cache"
+    description: 'A boolean value to indicate the Dune cache was found in the GHA cache'
     value: ${{ steps.dune-cache.outputs.cache-hit }}
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - name: Install and setup dune
       shell: bash
