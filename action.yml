@@ -37,6 +37,28 @@ runs:
       run: |
         cd "$SETUPDUNEDIR" && dune pkg lock
       if: inputs.automagic == 'true'
+    - name: Install depexts
+      shell: bash
+      env:
+        SETUPDUNEDIR: ${{ inputs.directory }}
+        OS: ${{ runner.os }}
+      run: |
+        DEPEXTS="$(cd "$SETUPDUNEDIR" >/dev/null && dune show depexts 2>&1)"
+        case "$OS,$DEPEXTS" in
+          *,) # No depexts to install
+            ;;
+          Linux,*)
+            set -x
+            sudo apt-get update
+            sudo apt-get install -y $DEPEXTS
+            ;;
+          macOS,*)
+            set -x
+            brew update
+            brew install $DEPEXTS
+            ;;
+        esac
+      if: inputs.automagic == 'true'
     - name: Build project
       shell: bash
       env:
