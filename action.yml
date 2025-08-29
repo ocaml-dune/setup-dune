@@ -17,10 +17,9 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    - name: Install and setup dune
+    - name: Environment setup
       shell: bash
       run: |
-        curl -fsSL https://get.dune.build/install | sh
         echo "$HOME/.local/bin" >> "$GITHUB_PATH"
         echo "DUNE_CACHE_ROOT=$HOME/.cache/dune" >> "$GITHUB_ENV"
     - name: Cache dune’s cache
@@ -30,46 +29,12 @@ runs:
         path: |
           ${{ env.DUNE_CACHE_ROOT }}
         key: dune-cache-${{ runner.os }}-${{ runner.arch }}
-    - name: Resolve dependencies
+    - name: Run the main action script
       shell: bash
       env:
         SETUPDUNEDIR: ${{ inputs.directory }}
-      run: |
-        cd "$SETUPDUNEDIR" && dune pkg lock
-      if: inputs.automagic == 'true'
-    - name: Install depexts
-      shell: bash
-      env:
-        SETUPDUNEDIR: ${{ inputs.directory }}
+        SETUPDUNEAUTOMAGIC: ${{ inputs.automagic }}
         OS: ${{ runner.os }}
+        ACTIONPATH: ${{ github.action_path }}
       run: |
-        DEPEXTS="$(cd "$SETUPDUNEDIR" >/dev/null && dune show depexts 2>&1)"
-        case "$OS,$DEPEXTS" in
-          *,) # No depexts to install
-            ;;
-          Linux,*)
-            set -x
-            sudo apt-get update
-            sudo apt-get install -y $DEPEXTS
-            ;;
-          macOS,*)
-            set -x
-            brew update
-            brew install $DEPEXTS
-            ;;
-        esac
-      if: inputs.automagic == 'true'
-    - name: Build project
-      shell: bash
-      env:
-        SETUPDUNEDIR: ${{ inputs.directory }}
-      run: |
-        cd "$SETUPDUNEDIR" && dune build
-      if: inputs.automagic == 'true'
-    - name: Run tests
-      shell: bash
-      env:
-        SETUPDUNEDIR: ${{ inputs.directory }}
-      run: |
-        cd "$SETUPDUNEDIR" && dune runtest
-      if: inputs.automagic == 'true'
+        bash "$ACTIONPATH/setupdune.sh"
