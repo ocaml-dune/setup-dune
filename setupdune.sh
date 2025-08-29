@@ -53,10 +53,28 @@ runtest() {
   (set -x; cd "$SETUPDUNEDIR" && dune runtest)
 }
 
+expand_steps() {
+  case "$SETUPDUNESTEPS" in
+    "")
+      case "$SETUPDUNEAUTOMAGIC" in
+        true)
+          STEPS="install-dune lock install-depexts build runtest"
+          ;;
+        *)
+          STEPS="install-dune"
+          ;;
+      esac
+      ;;
+    *)
+      STEPS="$SETUPDUNESTEPS"
+      ;;
+  esac
+}
+
 w() {
   # Wrap a step to control whether it should run
-  case "$SETUPDUNEAUTOMAGIC,$2" in
-    *,install-dune|true,*)
+  case "$STEPS" in
+    *"$2"*)
       echo "::group::$1"
       "$2"
       echo "::endgroup::"
@@ -65,6 +83,7 @@ w() {
 }
 
 main() {
+  expand_steps
   w "Install dune" install-dune
   w "Lock the project dependencies" lock
   w "Install the external dependencies" install-depexts

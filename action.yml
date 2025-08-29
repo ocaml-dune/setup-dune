@@ -6,6 +6,10 @@ inputs:
     description: 'Whether to run automatically all the standard lock, build, test steps'
     required: false
     default: 'false'
+  steps:
+    description: 'Fine-grain control of the steps to run; override `automagic` when set'
+    required: false
+    default: ''
   directory:
     description: 'Directory in which dune should be run'
     required: false
@@ -34,6 +38,7 @@ runs:
       env:
         SETUPDUNEDIR: ${{ inputs.directory }}
         SETUPDUNEAUTOMAGIC: ${{ inputs.automagic }}
+        SETUPDUNESTEPS: ${{ inputs.steps }}
         OS: ${{ runner.os }}
         ACTIONPATH: ${{ github.action_path }}
       run: |
