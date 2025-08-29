@@ -30,6 +30,18 @@ lazy-update-depexts() {
   esac
 }
 
+install-gpatch() {
+  case "$OS" in
+    macOS)
+      lazy-update-depexts
+      (set -x; brew install gpatch)
+      PATH="$(brew --prefix gpatch)/libexec/gnubin:$PATH"
+      printf '%s/libexec/gnubin\n' "$(brew --prefix gpatch)" >> "$GITHUB_PATH"
+      (set -x; patch --version)
+      ;;
+  esac
+}
+
 install-depexts() {
   DEPEXTS="$(cd "$SETUPDUNEDIR" >/dev/null && dune show depexts 2>&1)" || \
     abort "got \"$DEPEXTS\" when listing depexts"
@@ -58,8 +70,11 @@ runtest() {
 expand_steps() {
   case "$SETUPDUNESTEPS" in
     "")
-      case "$SETUPDUNEAUTOMAGIC" in
-        true)
+      case "$SETUPDUNEAUTOMAGIC,$OS" in
+        true,macOS)
+          STEPS="install-dune lock lazy-update-depexts install-gpatch install-depexts build runtest"
+          ;;
+        true,*)
           STEPS="install-dune lock lazy-update-depexts install-depexts build runtest"
           ;;
         *)
@@ -88,6 +103,7 @@ main() {
   expand_steps
   w "Install dune" install-dune
   w "Lock the project dependencies" lock
+  w "Install GNU patch on macOS" install-gpatch
   w "Install the external dependencies" install-depexts
   w "Build the project" build
   w "Run the test" runtest
