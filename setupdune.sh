@@ -55,19 +55,21 @@ runtest() {
 
 w() {
   # Wrap a step to control whether it should run
-  case "$SETUPDUNEAUTOMAGIC,$1" in
+  case "$SETUPDUNEAUTOMAGIC,$2" in
     *,install-dune|true,*)
-      "$1"
+      echo "::group::$1"
+      "$2"
+      echo "::endgroup::"
       ;;
   esac
 }
 
 main() {
-  w install-dune
-  w lock
-  w install-depexts
-  w build
-  w runtest
+  w "Install dune" install-dune
+  w "Lock the project dependencies" lock
+  w "Install the external dependencies" install-depexts
+  w "Build the project" build
+  w "Run the test" runtest
 }
 
 main
