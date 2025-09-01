@@ -6,17 +6,24 @@ inputs:
     description: 'Whether to run automatically all the standard lock, build, test steps'
     required: false
     default: 'false'
+  steps:
+    description: 'Fine-grain control of the steps to run; override `automagic` when set'
+    required: false
+    default: ''
+  directory:
+    description: 'Directory in which dune should be run'
+    required: false
+    default: '.'
 outputs:
   dune-cache-hit:
-    description: "A boolean value to indicate the Dune cache was found in the GHA cache"
+    description: 'A boolean value to indicate the Dune cache was found in the GHA cache'
     value: ${{ steps.dune-cache.outputs.cache-hit }}
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
-    - name: Install and setup dune
+    - name: Environment setup
       shell: bash
       run: |
-        curl -fsSL https://get.dune.build/install | sh
         echo "$HOME/.local/bin" >> "$GITHUB_PATH"
         echo "DUNE_CACHE_ROOT=$HOME/.cache/dune" >> "$GITHUB_ENV"
     - name: Cache dune’s cache
@@ -26,18 +33,13 @@ runs:
         path: |
           ${{ env.DUNE_CACHE_ROOT }}
         key: dune-cache-${{ runner.os }}-${{ runner.arch }}
-    - name: Resolve dependencies
+    - name: Run the main action script
       shell: bash
+      env:
+        SETUPDUNEDIR: ${{ inputs.directory }}
+        SETUPDUNEAUTOMAGIC: ${{ inputs.automagic }}
+        SETUPDUNESTEPS: ${{ inputs.steps }}
+        OS: ${{ runner.os }}
+        ACTIONPATH: ${{ github.action_path }}
       run: |
-        dune pkg lock
-      if: inputs.automagic == 'true'
-    - name: Build project
-      shell: bash
-      run: |
-        dune build
-      if: inputs.automagic == 'true'
-    - name: Run tests
-      shell: bash
-      run: |
-        dune runtest
-      if: inputs.automagic == 'true'
+        bash "$ACTIONPATH/setupdune.sh"

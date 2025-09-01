@@ -17,9 +17,16 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      - name: Checkout `graphics`
+        uses: actions/checkout@v4
+        with:
+          repository: ocaml/graphics
+          ref: refs/tags/5.2.0
+          path: graphics
       - name: Use local setup-dune action
         uses: ./
         with:
-          automagic: false
+          automagic: true
+          directory: graphics
       - name: Show dune version
         run: dune --version
