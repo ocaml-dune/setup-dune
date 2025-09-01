@@ -29,11 +29,17 @@ jobs:
 
 | Key         | Meaning                                                 | Default value           |
 | ----------- | ------------------------------------------------------- | ----------------------- |
+| `version`   | version of dune to use                                  | `dev`                   |
 | `directory` | where is the project that should be built and tested    | current directory (`.`) |
 | `automagic` | when `true`, triggers `pkg lock`, `build` and `runtest` | `false`                 |
 | `steps`     | fine-grain control over the steps to run                | empty, use `automagic`  |
 
 ### Details
+
+The `version` can have the following special values:
+
+- `dev` for the Developer Preview, which is the default at the moment,
+- `latest` for the latest stable release.
 
 When `steps` is empty, the set of steps to run is set according to `automagic`.
 Otherwise `steps` should be the space-separated list of steps to perform
