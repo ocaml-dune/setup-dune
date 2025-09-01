@@ -1,7 +1,11 @@
 name: Set up Dune
-description: Install Dune (developer preview)
+description: Install Dune and optionally build a project with Dune package management
 author: Samuel Hym
 inputs:
+  version:
+    description: 'Which version of the Dune binary to install'
+    required: false
+    default: 'dev'
   automagic:
     description: 'Whether to run automatically all the standard lock, build, test steps'
     required: false
@@ -32,10 +36,12 @@ runs:
       with:
         path: |
           ${{ env.DUNE_CACHE_ROOT }}
-        key: dune-cache-${{ runner.os }}-${{ runner.arch }}
+        key: dune-${{ inputs.version }}-${{ runner.os }}-${{ runner.arch }}
     - name: Run the main action script
       shell: bash
       env:
+        DUNE_CONFIG__PKG_BUILD_PROGRESS: enabled
+        SETUPDUNEVERSION: ${{ inputs.version }}
         SETUPDUNEDIR: ${{ inputs.directory }}
         SETUPDUNEAUTOMAGIC: ${{ inputs.automagic }}
         SETUPDUNESTEPS: ${{ inputs.steps }}
