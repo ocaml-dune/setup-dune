@@ -27,15 +27,35 @@ jobs:
 
 ## Inputs
 
-Only one input for now.
+| Key         | Meaning                                                 | Default value           |
+| ----------- | ------------------------------------------------------- | ----------------------- |
+| `directory` | where is the project that should be built and tested    | current directory (`.`) |
+| `automagic` | when `true`, triggers `pkg lock`, `build` and `runtest` | `false`                 |
+| `steps`     | fine-grain control over the steps to run                | empty, use `automagic`  |
 
-- `automagic`: if `true`, it will run automatically `dune pkg lock`, `dune build` and `dune runtest`. Defaults to `false`.
+### Details
+
+When `steps` is empty, the set of steps to run is set according to `automagic`.
+Otherwise `steps` should be the space-separated list of steps to perform
+(`automagic` is ignored in that case). The complete list of steps is:
+`install-dune lock lazy-update-depexts install-gpatch install-depexts build
+runtest`. All are enabled when `automagic` is `true` except for `install-gpatch`
+which is enabled only on macOS; only `install-dune` is enabled when `automagic`
+is false.
+
+It can be useful to tune `steps` for instance when:
+
+- your project doesn’t require `gpatch`, as updating `brew` and installing
+  `gpatch` takes some time already,
+- you have a repository with more than one project and you want to trigger
+  `setup-dune` more than once but still install dune and run `{apt,brew} update`
+  (if needed) only the first time.
 
 ## Outputs
 
-Only one output for now.
-
-- `dune-cache-hit`: reports whether the Dune cache was found in the GitHub Action cache.
+| Key              | Meaning                                                     |
+| ---------------- | ----------------------------------------------------------- |
+| `dune-cache-hit` | whether the Dune cache was found in the GitHub Action cache |
 
 ## Contributions
 
