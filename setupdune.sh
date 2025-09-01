@@ -50,10 +50,12 @@ install-depexts() {
       ;;
     Linux,*)
       lazy-update-depexts
+      # shellcheck disable=SC2086
       (set -x; sudo apt-get install -y $DEPEXTS)
       ;;
     macOS,*)
       lazy-update-depexts
+      # shellcheck disable=SC2086
       (set -x; brew install $DEPEXTS)
       ;;
   esac
