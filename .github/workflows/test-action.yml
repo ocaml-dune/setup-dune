@@ -11,7 +11,7 @@ jobs:
     strategy:
       matrix:
         runs-on: [ubuntu-latest]
-        version: [latest, 3.19.1, 3.18.2]
+        version: [latest, 3.19.1]
     runs-on: ${{ matrix.runs-on }}
     steps:
       - name: Checkout code
