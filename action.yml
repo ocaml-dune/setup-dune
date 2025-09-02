@@ -36,7 +36,7 @@ runs:
       with:
         path: |
           ${{ env.DUNE_CACHE_ROOT }}
-        key: dune-cache-${{ runner.os }}-${{ runner.arch }}
+        key: x1-dune-cache-${{ runner.os }}-${{ runner.arch }}
     - name: Run the main action script
       shell: bash
       env:
