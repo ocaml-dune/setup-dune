@@ -36,7 +36,7 @@ runs:
       with:
         path: |
           ${{ env.DUNE_CACHE_ROOT }}
-        key: x1-dune-cache-${{ runner.os }}-${{ runner.arch }}
+        key: x2-dune-cache-${{ runner.os }}-${{ runner.arch }}
     - name: Explore cache
       shell: bash
       run: |
