@@ -37,6 +37,11 @@ runs:
         path: |
           ${{ env.DUNE_CACHE_ROOT }}
         key: x1-dune-cache-${{ runner.os }}-${{ runner.arch }}
+    - name: Explore cache
+      shell: bash
+      run: |
+        du -hsc "$DUNE_CACHE_ROOT"
+        find "$DUNE_CACHE_ROOT"
     - name: Run the main action script
       shell: bash
       env:

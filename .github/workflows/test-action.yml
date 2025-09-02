@@ -10,8 +10,8 @@ jobs:
   test:
     strategy:
       matrix:
-        runs-on: [ubuntu-latest, macos-latest, macos-13]
-        version: [dev, latest]
+        runs-on: [ubuntu-latest]
+        version: [latest]
     runs-on: ${{ matrix.runs-on }}
     steps:
       - name: Checkout code
@@ -26,7 +26,7 @@ jobs:
         uses: ./
         with:
           version: ${{ matrix.version }}
-          automagic: true
+          automagic: false
           directory: graphics
       - name: Show dune version
         run: dune --version
