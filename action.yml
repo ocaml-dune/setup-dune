@@ -54,3 +54,7 @@ runs:
         ACTIONPATH: ${{ github.action_path }}
       run: |
         bash "$ACTIONPATH/setupdune.sh"
+    - name: Explore cache
+      shell: bash
+      run: |
+        dune cache size
