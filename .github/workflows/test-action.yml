@@ -13,6 +13,7 @@ jobs:
     strategy:
       matrix:
         runs-on: [ubuntu-latest, macos-latest, macos-13]
+        version: [dev, latest]
     runs-on: ${{ matrix.runs-on }}
     steps:
       - name: Checkout code
@@ -26,6 +27,7 @@ jobs:
       - name: Use local setup-dune action
         uses: ./
         with:
+          version: ${{ matrix.version }}
           automagic: true
           directory: graphics
       - name: Show dune version
