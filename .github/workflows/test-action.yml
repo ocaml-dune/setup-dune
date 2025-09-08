@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         runs-on: [ubuntu-latest, macos-latest, macos-13]
-        version: [dev, latest]
+        version: [dev, latest, 3.19.1]
     runs-on: ${{ matrix.runs-on }}
     steps:
       - name: Checkout code
@@ -24,6 +24,11 @@ jobs:
           repository: ocaml/graphics
           ref: refs/tags/5.2.0
           path: graphics
+      - name: Ensure compatibility with Dune’s version
+        run: |
+          printf '(lang dune 3.18)\n(lock_dir (constraints (dune (= %s))))\n' \
+            ${{ matrix.version }} > graphics/dune-workspace
+        if: ${{ startsWith(matrix.version, '3') }}
       - name: Use local setup-dune action
         uses: ./
         with:
