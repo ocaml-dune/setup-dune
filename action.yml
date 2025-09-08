@@ -36,7 +36,10 @@ runs:
       with:
         path: |
           ${{ env.DUNE_CACHE_ROOT }}
-        key: dune-${{ inputs.version }}-${{ runner.os }}-${{ runner.arch }}
+        key: dune-${{ inputs.version }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles(format('{0}/dune-project',inputs.directory)) }}-${{ github.sha }}
+        restore-keys: |
+          dune-${{ inputs.version }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles(format('{0}/dune-project',inputs.directory)) }}-
+          dune-${{ inputs.version }}-${{ runner.os }}-${{ runner.arch }}-
     - name: Run the main action script
       shell: bash
       env:
