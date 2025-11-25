@@ -11,7 +11,7 @@ abort() {
 
 install-dune() {
   case "$SETUPDUNEVERSION" in
-    dev)
+    nightly|dev)
       (set -x; curl -fsSL https://get.dune.build/install | sh)
       ;;
     latest)

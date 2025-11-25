@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         runs-on: [ubuntu-latest, macos-latest, macos-13]
-        version: [dev, latest, 3.19.1]
+        version: [nightly, latest, 3.19.1]
     runs-on: ${{ matrix.runs-on }}
     steps:
       - name: Checkout code

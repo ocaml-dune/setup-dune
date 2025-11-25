@@ -29,7 +29,7 @@ jobs:
 
 | Key         | Meaning                                                 | Default value           |
 | ----------- | ------------------------------------------------------- | ----------------------- |
-| `version`   | version of dune to use                                  | `dev`                   |
+| `version`   | version of dune to use                                  | `nightly`               |
 | `directory` | where is the project that should be built and tested    | current directory (`.`) |
 | `automagic` | when `true`, triggers `pkg lock`, `build` and `runtest` | `false`                 |
 | `steps`     | fine-grain control over the steps to run                | empty, use `automagic`  |
@@ -38,9 +38,9 @@ jobs:
 
 The `version` can have the following special values:
 
-- `dev` for the latest [nightly release](https://nightly.dune.build/): this is
-  the default at the moment since dune package management is still moving fast
-  and targeted at early adopters.
+- `nightly` for the latest [nightly release](https://nightly.dune.build/): this
+  is the default at the moment since dune package management is still moving
+  fast and targeted at early adopters.
 - `latest` for the latest stable release of dune: for CI systems that want more
   stable use of dune package management.
 
