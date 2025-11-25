@@ -1,4 +1,4 @@
-# `setup-dune`: a GitHub Action to install and setup `dune`, developer preview
+# `setup-dune`: a GitHub Action to install and setup `dune`
 
 ## How to use it
 
@@ -38,9 +38,11 @@ jobs:
 
 The `version` can have the following special values:
 
-- `dev` for the Developer Preview, which is the default at the moment since
-  dune package management is still an experimental feature,
-- `latest` for the latest stable release.
+- `dev` for the latest [nightly release](https://nightly.dune.build/): this is
+  the default at the moment since dune package management is still moving fast
+  and targeted at early adopters.
+- `latest` for the latest stable release of dune: for CI systems that want more
+  stable use of dune package management.
 
 When `steps` is empty, the set of steps to run is set according to `automagic`.
 Otherwise `steps` should be the space-separated list of steps to perform
