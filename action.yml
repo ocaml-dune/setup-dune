@@ -5,7 +5,7 @@ inputs:
   version:
     description: 'Which version of the Dune binary to install'
     required: false
-    default: 'dev'
+    default: 'nightly'
   automagic:
     description: 'Whether to run automatically all the standard lock, build, test steps'
     required: false
