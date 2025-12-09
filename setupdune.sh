@@ -81,19 +81,15 @@ runtest() {
 }
 
 expand_steps() {
-  case "$SETUPDUNESTEPS" in
-    "")
-      case "$SETUPDUNEAUTOMAGIC,$OS" in
-        true,macOS)
-          STEPS="install-dune lock lazy-update-depexts install-gpatch install-depexts build runtest"
-          ;;
-        true,*)
-          STEPS="install-dune lock lazy-update-depexts install-depexts build runtest"
-          ;;
-        *)
-          STEPS="install-dune"
-          ;;
-      esac
+  case "$OS,$SETUPDUNESTEPS" in
+    "macOS,all")
+      STEPS="install-dune lock lazy-update-depexts install-gpatch install-depexts build runtest"
+      ;;
+    "Linux,all")
+      STEPS="install-dune lock lazy-update-depexts install-depexts build runtest"
+      ;;
+    "macOS,"|"Linux,")
+      STEPS="install-dune"
       ;;
     *)
       STEPS="$SETUPDUNESTEPS"

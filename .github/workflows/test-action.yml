@@ -33,7 +33,7 @@ jobs:
         uses: ./
         with:
           version: ${{ matrix.version }}
-          automagic: true
+          steps: all
           directory: graphics
       - name: Show dune version
         run: dune --version
