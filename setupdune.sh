@@ -24,8 +24,22 @@ install-dune() {
   (set -x; dune --version)
 }
 
-lock() {
-  (set -x; cd "$SETUPDUNEDIR" && dune pkg lock)
+enable_pkg() {
+  case "$(dune --version)" in
+    3.19*|3.20*)
+      (set -x; cd "$SETUPDUNEDIR" && (test -d dune.lock || dune pkg lock))
+      ;;
+    *)
+      CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/dune"
+      mkdir -p "$CONFIG_DIR"
+      if test -e "$CONFIG_DIR/config"; then
+        printf 'Warning: %s already exists, assume it enables package management\n' "$CONFIG_DIR/config" >&2
+      else
+        printf '(lang dune 3.21)\n(pkg enabled)\n' > "$CONFIG_DIR/config"
+        (set -x; cat "$CONFIG_DIR/config")
+      fi
+      ;;
+  esac
 }
 
 lazy-update-depexts() {
@@ -83,10 +97,10 @@ runtest() {
 expand_steps() {
   case "$OS,$SETUPDUNESTEPS" in
     "macOS,all")
-      STEPS="install-dune lock lazy-update-depexts install-gpatch install-depexts build runtest"
+      STEPS="install-dune enable_pkg lazy-update-depexts install-gpatch install-depexts build runtest"
       ;;
     "Linux,all")
-      STEPS="install-dune lock lazy-update-depexts install-depexts build runtest"
+      STEPS="install-dune enable_pkg lazy-update-depexts install-depexts build runtest"
       ;;
     "macOS,"|"Linux,")
       STEPS="install-dune"
@@ -111,7 +125,7 @@ w() {
 main() {
   expand_steps
   w "Install dune" install-dune
-  w "Lock the project dependencies" lock
+  w "Enable dune package management" enable_pkg
   w "Install GNU patch on macOS" install-gpatch
   w "Install the external dependencies" install-depexts
   w "Build the project" build
