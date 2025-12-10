@@ -35,5 +35,6 @@ jobs:
           version: ${{ matrix.version }}
           steps: all
           directory: graphics
+          display: short
       - name: Show dune version
         run: dune --version

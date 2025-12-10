@@ -10,7 +10,10 @@ abort() {
 }
 
 dune_aux() {
-  (set -x; cd "$SETUPDUNEDIR" && dune "$@")
+  (set -x; cd "$SETUPDUNEDIR" && \
+    dune "$@" \
+      ${SETUPDUNEWORKSPACE:+--workspace="$SETUPDUNEWORKSPACE"} \
+      ${SETUPDUNEDISPLAY:+--display="$SETUPDUNEDISPLAY"})
 }
 
 install-dune() {
@@ -73,8 +76,10 @@ install-gpatch() {
 }
 
 install-depexts() {
-  DEPEXTS="$(cd "$SETUPDUNEDIR" >/dev/null && dune show depexts 2>&1)" || \
-    abort "got \"$DEPEXTS\" when listing depexts"
+  DEPEXTS="$(cd "$SETUPDUNEDIR" >/dev/null && \
+             dune show depexts \
+               ${SETUPDUNEWORKSPACE:+--workspace="$SETUPDUNEWORKSPACE"} 2>&1)" \
+    || abort "got \"$DEPEXTS\" when listing depexts"
   case "$OS,$DEPEXTS" in
     *,) # No depexts to install
       ;;
