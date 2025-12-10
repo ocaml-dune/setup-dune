@@ -10,7 +10,8 @@ abort() {
 }
 
 dune_aux() {
-  (set -x; cd "$SETUPDUNEDIR" && dune "$@")
+  (set -x; cd "$SETUPDUNEDIR" && \
+    dune "$@" ${SETUPDUNEDISPLAY:+--display="$SETUPDUNEDISPLAY"})
 }
 
 install-dune() {
