@@ -9,7 +9,7 @@ inputs:
   steps:
     description: 'Which steps to run'
     required: false
-    default: ''
+    default: 'all'
   directory:
     description: 'Directory in which dune should be run'
     required: false
