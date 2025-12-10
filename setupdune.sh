@@ -9,6 +9,10 @@ abort() {
   exit 2
 }
 
+dune_aux() {
+  (set -x; cd "$SETUPDUNEDIR" && dune "$@")
+}
+
 install-dune() {
   case "$SETUPDUNEVERSION" in
     nightly|dev)
@@ -27,7 +31,7 @@ install-dune() {
 enable-pkg() {
   case "$(dune --version)" in
     3.19*|3.20*)
-      (set -x; cd "$SETUPDUNEDIR" && (test -d dune.lock || dune pkg lock))
+      (set -x; cd "$SETUPDUNEDIR" && test -d dune.lock) || dune_aux pkg lock
       ;;
     *)
       CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/dune"
@@ -88,11 +92,11 @@ install-depexts() {
 }
 
 build() {
-  (set -x; cd "$SETUPDUNEDIR" && dune build)
+  dune_aux build
 }
 
 runtest() {
-  (set -x; cd "$SETUPDUNEDIR" && dune runtest)
+  dune_aux runtest
 }
 
 expand_steps() {
