@@ -12,8 +12,23 @@ jobs:
   test:
     strategy:
       matrix:
-        runs-on: [ubuntu-latest, macos-latest, macos-15-intel]
+        runs-on: [ubuntu-latest, macos-latest]
         version: [nightly, latest, 3.19.1]
+        steps: ['install-dune enable-pkg lazy-update-depexts install-depexts build runtest']
+        workspace: ['']
+        display: ['short']
+        include:
+          - runs-on: ubuntu-latest
+            version: nightly
+            steps: all
+            workspace: dune-workspace.ci
+            display: verbose
+            extraname: ' with workspace'
+          - runs-on: macos-15-intel
+            version: nightly
+            steps: all
+            display: short
+    name: ${{ matrix.version }} on ${{ matrix.runs-on }}${{ matrix.extraname }}
     runs-on: ${{ matrix.runs-on }}
     steps:
       - name: Checkout code
@@ -29,12 +44,18 @@ jobs:
           printf '(lang dune 3.18)\n(lock_dir (constraints (dune (= %s))))\n' \
             ${{ matrix.version }} > graphics/dune-workspace
         if: ${{ startsWith(matrix.version, '3') }}
+      - name: Create `dune-workspace.ci`
+        run: |
+          printf '(lang dune 3.18)\n(lock_dir (constraints (ocaml (= 5.3.0))))\n' \
+            > graphics/dune-workspace.ci
+        if: ${{ matrix.workspace == 'dune-workspace.ci' }}
       - name: Use local setup-dune action
         uses: ./
         with:
           version: ${{ matrix.version }}
-          steps: all
+          steps: ${{ matrix.steps }}
           directory: graphics
-          display: short
+          workspace: ${{ matrix.workspace }}
+          display: ${{ matrix.display }}
       - name: Show dune version
         run: dune --version
