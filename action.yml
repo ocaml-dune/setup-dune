@@ -9,7 +9,7 @@ inputs:
   steps:
     description: 'Fine-grain control of the steps to run; override `automagic` when set'
     required: false
-    default: ''
+    default: 'all'
   directory:
     description: 'Directory in which dune should be run'
     required: false
