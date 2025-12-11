@@ -10,10 +10,25 @@ abort() {
 }
 
 dune_aux() {
+  status=0
   (set -x; cd "$SETUPDUNEDIR" && \
     dune "$@" \
       ${SETUPDUNEWORKSPACE:+--workspace="$SETUPDUNEWORKSPACE"} \
-      ${SETUPDUNEDISPLAY:+--display="$SETUPDUNEDISPLAY"})
+      ${SETUPDUNEDISPLAY:+--display="$SETUPDUNEDISPLAY"}) \
+    || status=$?
+  if ! test "$status" = 0; then
+    if test -e "$SETUPDUNEDIR/_build/log"; then
+      echo "::endgroup::"
+      echo '::group::`_build/log`'
+      printf '::error title=Fatal error::"dune %s" exited with code %d\n' \
+        "$*" "$status" 1>&2
+      cat "$SETUPDUNEDIR/_build/log"
+    else
+      printf '::error title=Fatal error::"dune %s" exited with code %d\n' \
+        "$*" "$status" 1>&2
+    fi
+    exit "$status"
+  fi
 }
 
 install-dune() {
