@@ -17,17 +17,22 @@ jobs:
         steps: ['install-dune enable-pkg lazy-update-depexts install-depexts build runtest']
         workspace: ['']
         display: ['short']
+        fault: [false]
         include:
-          - runs-on: ubuntu-latest
+          - # A strange case: faulty because it doesn’t install the depexts,
+            # using a specific dune-workspace and with verbose log
+            runs-on: ubuntu-latest
             version: nightly
-            steps: all
+            steps: 'install-dune enable-pkg build runtest'
             workspace: dune-workspace.ci
             display: verbose
             extraname: ' with workspace'
+            fault: true
           - runs-on: macos-15-intel
             version: nightly
             steps: all
             display: short
+            fault: false
     name: ${{ matrix.version }} on ${{ matrix.runs-on }}${{ matrix.extraname }}
     runs-on: ${{ matrix.runs-on }}
     steps:
@@ -57,5 +62,6 @@ jobs:
           directory: graphics
           workspace: ${{ matrix.workspace }}
           display: ${{ matrix.display }}
+        continue-on-error: ${{ matrix.fault }}
       - name: Show dune version
         run: dune --version
