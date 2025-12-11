@@ -5,7 +5,7 @@
 set -euo pipefail
 
 abort() {
-  printf 'Fatal error: %s\n' "$1" 1>&2
+  printf '::error title=Fatal error::%s\n' "$1" 1>&2
   exit 2
 }
 
