@@ -17,17 +17,20 @@ jobs:
         steps: ['install-dune enable-pkg lazy-update-depexts install-depexts build runtest']
         workspace: ['']
         display: ['short']
+        cache: [true]
         include:
           - runs-on: ubuntu-latest
             version: nightly
             steps: all
             workspace: dune-workspace.ci
             display: verbose
+            cache: false
             extraname: ' with workspace'
           - runs-on: macos-15-intel
             version: nightly
             steps: all
             display: short
+            cache: true
     name: ${{ matrix.version }} on ${{ matrix.runs-on }}${{ matrix.extraname }}
     runs-on: ${{ matrix.runs-on }}
     steps:
@@ -56,5 +59,6 @@ jobs:
           directory: graphics
           workspace: ${{ matrix.workspace }}
           display: ${{ matrix.display }}
+          cache: ${{ matrix.cache }}
       - name: Show dune version
         run: dune --version
