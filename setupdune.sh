@@ -37,10 +37,10 @@ install-dune() {
       (set -x; curl -fsSL https://get.dune.build/install | sh)
       ;;
     latest)
-      (set -x; curl -fsSL https://github.com/ocaml-dune/dune-bin-install/releases/download/v3/install.sh | sh -s -- --install-root "$HOME/.local" --no-update-shell-config)
+      (set -x; curl -fsSL4 https://github.com/ocaml-dune/dune-bin-install/releases/download/v3/install.sh | sh -s -- --install-root "$HOME/.local" --no-update-shell-config)
       ;;
     *)
-      (set -x; curl -fsSL https://github.com/ocaml-dune/dune-bin-install/releases/download/v3/install.sh | sh -s -- "$SETUPDUNEVERSION" --install-root "$HOME/.local" --no-update-shell-config)
+      (set -x; curl -fsSL4 https://github.com/ocaml-dune/dune-bin-install/releases/download/v3/install.sh | sh -s -- "$SETUPDUNEVERSION" --install-root "$HOME/.local" --no-update-shell-config)
       ;;
   esac
   (set -x; dune --version)
