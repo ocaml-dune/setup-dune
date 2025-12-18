@@ -11,6 +11,7 @@ permissions: {}
 jobs:
   test:
     strategy:
+      fail-fast: false
       matrix:
         runs-on: [ubuntu-latest, macos-latest]
         version: [nightly, latest, 3.19.1]
