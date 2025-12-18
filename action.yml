@@ -45,7 +45,7 @@ runs:
             ;;
         esac
     - name: Cache dune’s cache and build artefacts
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       id: dune-cache
       with:
         path: |
