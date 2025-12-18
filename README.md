@@ -48,7 +48,7 @@ The `version` can have the following special values:
 of two special values.
 
 - The steps are named: `install-dune`, `enable-pkg`, `lazy-update-depexts`,
-  `install-gpatch`, `install-depexts`, `build`, and `runtest`.
+  `install-gpatch`, `install-depexts`, `build-deps`, `build`, and `runtest`.
 
   - `enable-pkg` enables Dune package management by creating a configuration
     containing `(pkg enabled)` (for Dune 3.21 or later).

@@ -14,7 +14,7 @@ jobs:
       matrix:
         runs-on: [ubuntu-latest, macos-latest]
         version: [nightly, latest, 3.19.1]
-        steps: ['install-dune enable-pkg lazy-update-depexts install-depexts build runtest']
+        steps: ['install-dune enable-pkg lazy-update-depexts install-depexts build-deps build runtest']
         workspace: ['']
         display: ['short']
         fault: [false]
