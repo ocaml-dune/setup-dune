@@ -5,8 +5,30 @@
 set -euo pipefail
 
 abort() {
-  printf 'Fatal error: %s\n' "$1" 1>&2
+  printf '::error title=Fatal error::%s\n' "$1" 1>&2
   exit 2
+}
+
+dune_aux() {
+  status=0
+  (set -x; cd "$SETUPDUNEDIR" && \
+    dune "$@" \
+      ${SETUPDUNEWORKSPACE:+--workspace="$SETUPDUNEWORKSPACE"} \
+      ${SETUPDUNEDISPLAY:+--display="$SETUPDUNEDISPLAY"}) \
+    || status=$?
+  if ! test "$status" = 0; then
+    if test -e "$SETUPDUNEDIR/_build/log"; then
+      echo "::endgroup::"
+      echo '::group::`_build/log`'
+      printf '::error title=Fatal error::"dune %s" exited with code %d\n' \
+        "$*" "$status" 1>&2
+      cat "$SETUPDUNEDIR/_build/log"
+    else
+      printf '::error title=Fatal error::"dune %s" exited with code %d\n' \
+        "$*" "$status" 1>&2
+    fi
+    exit "$status"
+  fi
 }
 
 install-dune() {
@@ -15,17 +37,32 @@ install-dune() {
       (set -x; curl -fsSL https://get.dune.build/install | sh)
       ;;
     latest)
-      (set -x; curl -fsSL https://github.com/ocaml-dune/dune-bin-install/releases/download/v2/install.sh | sh -s -- --install-root "$HOME/.local" --no-update-shell-config)
+      (set -x; curl -fsSL4 https://github.com/ocaml-dune/dune-bin-install/releases/download/v3/install.sh | sh -s -- --install-root "$HOME/.local" --no-update-shell-config)
       ;;
     *)
-      (set -x; curl -fsSL https://github.com/ocaml-dune/dune-bin-install/releases/download/v2/install.sh | sh -s -- "$SETUPDUNEVERSION" --install-root "$HOME/.local" --no-update-shell-config)
+      (set -x; curl -fsSL4 https://github.com/ocaml-dune/dune-bin-install/releases/download/v3/install.sh | sh -s -- "$SETUPDUNEVERSION" --install-root "$HOME/.local" --no-update-shell-config)
       ;;
   esac
   (set -x; dune --version)
 }
 
-lock() {
-  (set -x; cd "$SETUPDUNEDIR" && dune pkg lock)
+enable-pkg() {
+  case "$(dune --version)" in
+    3.19*|3.20*)
+      (set -x; cd "$SETUPDUNEDIR" && test -d dune.lock) || dune_aux pkg lock
+      ;;
+    *)
+      CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/dune"
+      if test -e "$CONFIG_DIR/config"; then
+        dune_aux pkg enabled \
+          || abort "dune package management is disabled in your configuration"
+      else
+        mkdir -p "$CONFIG_DIR"
+        printf '(lang dune 3.21)\n(pkg enabled)\n' > "$CONFIG_DIR/config"
+        (set -x; cat "$CONFIG_DIR/config")
+      fi
+      ;;
+  esac
 }
 
 lazy-update-depexts() {
@@ -54,8 +91,10 @@ install-gpatch() {
 }
 
 install-depexts() {
-  DEPEXTS="$(cd "$SETUPDUNEDIR" >/dev/null && dune show depexts 2>&1)" || \
-    abort "got \"$DEPEXTS\" when listing depexts"
+  DEPEXTS="$(cd "$SETUPDUNEDIR" >/dev/null && \
+             dune show depexts \
+               ${SETUPDUNEWORKSPACE:+--workspace="$SETUPDUNEWORKSPACE"} 2>&1)" \
+    || abort "got \"$DEPEXTS\" when listing depexts"
   case "$OS,$DEPEXTS" in
     *,) # No depexts to install
       ;;
@@ -72,28 +111,28 @@ install-depexts() {
   esac
 }
 
+build-deps() {
+  dune_aux build @pkg-install
+}
+
 build() {
-  (set -x; cd "$SETUPDUNEDIR" && dune build)
+  dune_aux build
 }
 
 runtest() {
-  (set -x; cd "$SETUPDUNEDIR" && dune runtest)
+  dune_aux runtest
 }
 
 expand_steps() {
-  case "$SETUPDUNESTEPS" in
-    "")
-      case "$SETUPDUNEAUTOMAGIC,$OS" in
-        true,macOS)
-          STEPS="install-dune lock lazy-update-depexts install-gpatch install-depexts build runtest"
-          ;;
-        true,*)
-          STEPS="install-dune lock lazy-update-depexts install-depexts build runtest"
-          ;;
-        *)
-          STEPS="install-dune"
-          ;;
-      esac
+  case "$OS,$SETUPDUNESTEPS" in
+    "macOS,all")
+      STEPS="install-dune enable-pkg lazy-update-depexts install-gpatch install-depexts build-deps build runtest"
+      ;;
+    "Linux,all")
+      STEPS="install-dune enable-pkg lazy-update-depexts install-depexts build-deps build runtest"
+      ;;
+    "macOS,"|"Linux,")
+      STEPS="install-dune"
       ;;
     *)
       STEPS="$SETUPDUNESTEPS"
@@ -115,9 +154,10 @@ w() {
 main() {
   expand_steps
   w "Install dune" install-dune
-  w "Lock the project dependencies" lock
+  w "Enable dune package management" enable-pkg
   w "Install GNU patch on macOS" install-gpatch
   w "Install the external dependencies" install-depexts
+  w "Build the dependencies" build-deps
   w "Build the project" build
   w "Run the test" runtest
 }

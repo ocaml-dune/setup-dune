@@ -1,4 +1,4 @@
-# `setup-dune`: a GitHub Action to install and setup `dune`
+# `setup-dune`: a GitHub Action to install Dune and optionally build a project with Dune package management
 
 ## How to use it
 
@@ -13,26 +13,26 @@ jobs:
   build:
     strategy:
       matrix:
-        runs-on: [ ubuntu-latest, macos-latest, macos-13 ]
+        runs-on: [ ubuntu-latest, macos-latest ]
     runs-on: ${{ matrix.runs-on }}
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Use dune
-        uses: ocaml-dune/setup-dune@v0
-        with:
-          automagic: true
+        uses: ocaml-dune/setup-dune@v2
 ```
 
 ## Inputs
 
-| Key         | Meaning                                                 | Default value           |
-| ----------- | ------------------------------------------------------- | ----------------------- |
-| `version`   | version of dune to use                                  | `nightly`               |
-| `directory` | where is the project that should be built and tested    | current directory (`.`) |
-| `automagic` | when `true`, triggers `pkg lock`, `build` and `runtest` | `false`                 |
-| `steps`     | fine-grain control over the steps to run                | empty, use `automagic`  |
+| Key         | Meaning                                                                | Default value           |
+| ----------- | ---------------------------------------------------------------------- | ----------------------- |
+| `version`   | version of dune to use                                                 | `nightly`               |
+| `steps`     | which steps should be run                                              | `all`                   |
+| `directory` | where is the project that should be built and tested                   | current directory (`.`) |
+| `workspace` | argument for the `--workspace` option (relative to `directory`)        | empty (Dune’s default)  |
+| `display`   | argument for the `--display` option                                    | empty (Dune’s default)  |
+
 
 ### Details
 
@@ -44,15 +44,25 @@ The `version` can have the following special values:
 - `latest` for the latest stable release of dune: for CI systems that want more
   stable use of dune package management.
 
-When `steps` is empty, the set of steps to run is set according to `automagic`.
-Otherwise `steps` should be the space-separated list of steps to perform
-(`automagic` is ignored in that case). The complete list of steps is:
-`install-dune lock lazy-update-depexts install-gpatch install-depexts build
-runtest`. All are enabled when `automagic` is `true` except for `install-gpatch`
-which is enabled only on macOS; only `install-dune` is enabled when `automagic`
-is false.
+`steps` should be either a space-separated list of the steps to perform or one
+of two special values.
 
-It can be useful to tune `steps` for instance when:
+- The steps are named: `install-dune`, `enable-pkg`, `lazy-update-depexts`,
+  `install-gpatch`, `install-depexts`, `build-deps`, `build`, and `runtest`.
+
+  - `enable-pkg` enables Dune package management by creating a configuration
+    containing `(pkg enabled)` (for Dune 3.21 or later).
+  - `lazy-update-depexts`, when present, will trigger a `brew update` or
+    `apt-get update` just before any other external dependency installation
+    (during `install-gpatch` on macOS or on `install-depexts` on all OSes); if
+    no such installation is required, the update is skipped (hence the `lazy`).
+
+  The other steps should be pretty self-explanatory.
+- If `steps` is given the `all` value, all those steps are performed.
+- If `steps` is given the empty value, only the `install-dune` step is
+  performed.
+
+It can be useful to set an explicit value for `steps` for instance when:
 
 - your project doesn’t require `gpatch`, as updating `brew` and installing
   `gpatch` takes some time already,
