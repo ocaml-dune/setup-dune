@@ -17,6 +17,7 @@ jobs:
         version: [nightly, latest, 3.19.1]
         steps: ['install-dune enable-pkg lazy-update-depexts install-depexts build-deps build runtest']
         workspace: ['']
+        ocaml-version: ['']
         display: ['short']
         fault: [false]
         include:
@@ -29,6 +30,13 @@ jobs:
             display: verbose
             extraname: ' with workspace'
             fault: true
+          - runs-on: ubuntu-latest
+            version: nightly
+            steps: all
+            ocaml-version: '5.3.0'
+            display: short
+            extraname: ' with OCaml version'
+            fault: false
           - runs-on: macos-15-intel
             version: nightly
             steps: all
@@ -62,6 +70,7 @@ jobs:
           steps: ${{ matrix.steps }}
           directory: graphics
           workspace: ${{ matrix.workspace }}
+          ocaml-version: ${{ matrix.ocaml-version }}
           display: ${{ matrix.display }}
         continue-on-error: ${{ matrix.fault }}
       - name: Show dune version

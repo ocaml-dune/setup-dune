@@ -65,6 +65,23 @@ enable-pkg() {
   esac
 }
 
+set-ocaml-version() {
+  case "$SETUPDUNEOCAMLVERSION" in
+    "")
+      echo "No constraint on OCaml version required."
+      ;;
+    *)
+      printf '(lang dune 3.18)\n(lock_dir\n (constraints\n  (ocaml (= %s))))\n'\
+        "$SETUPDUNEOCAMLVERSION" > "$SETUPDUNEDIR/dune-workspace.setup-dune"
+      if test -n "$SETUPDUNEWORKSPACE"; then
+        abort "'workspace' and 'ocaml-version' cannot be set at the same time"
+      fi
+      SETUPDUNEWORKSPACE=dune-workspace.setup-dune
+      (set -x; cat "$SETUPDUNEDIR/dune-workspace.setup-dune")
+      ;;
+  esac
+}
+
 lazy-update-depexts() {
   case "$OS,$STEPS" in
     Linux,*lazy-update-depexts*)
@@ -126,10 +143,10 @@ runtest() {
 expand_steps() {
   case "$OS,$SETUPDUNESTEPS" in
     "macOS,all")
-      STEPS="install-dune enable-pkg lazy-update-depexts install-gpatch install-depexts build-deps build runtest"
+      STEPS="install-dune enable-pkg set-ocaml-version lazy-update-depexts install-gpatch install-depexts build-deps build runtest"
       ;;
     "Linux,all")
-      STEPS="install-dune enable-pkg lazy-update-depexts install-depexts build-deps build runtest"
+      STEPS="install-dune enable-pkg set-ocaml-version lazy-update-depexts install-depexts build-deps build runtest"
       ;;
     "macOS,"|"Linux,")
       STEPS="install-dune"
@@ -155,6 +172,7 @@ main() {
   expand_steps
   w "Install dune" install-dune
   w "Enable dune package management" enable-pkg
+  w "Constrain OCaml version" set-ocaml-version
   w "Install GNU patch on macOS" install-gpatch
   w "Install the external dependencies" install-depexts
   w "Build the dependencies" build-deps
