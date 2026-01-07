@@ -4,8 +4,10 @@
 
 set -euo pipefail
 
+: ${ERRORPREFIX:="::error::Fatal error: "}
+
 abort() {
-  printf '::error title=Fatal error::%s\n' "$1" 1>&2
+  printf '%s%s\n' "$ERRORPREFIX" "$1" 1>&2
   exit 2
 }
 
@@ -20,12 +22,12 @@ dune_aux() {
     if test -e "$SETUPDUNEDIR/_build/log"; then
       echo "::endgroup::"
       echo '::group::`_build/log`'
-      printf '::error title=Fatal error::"dune %s" exited with code %d\n' \
-        "$*" "$status" 1>&2
+      printf '%s"dune %s" exited with code %d\n' \
+        "$ERRORPREFIX" "$*" "$status" 1>&2
       cat "$SETUPDUNEDIR/_build/log"
     else
-      printf '::error title=Fatal error::"dune %s" exited with code %d\n' \
-        "$*" "$status" 1>&2
+      printf '%s"dune %s" exited with code %d\n' \
+        "$ERRORPREFIX" "$*" "$status" 1>&2
     fi
     exit "$status"
   fi
