@@ -7,7 +7,7 @@ set -euo pipefail
 : "${ERRORPREFIX:="::error::Fatal error: "}"
 
 abort() {
-  printf '%s%s\n' "$ERRORPREFIX" "$1" 1>&2
+  printf '%s%s\n' "$ERRORPREFIX" "$1"
   exit 2
 }
 
@@ -23,17 +23,17 @@ dune_aux() {
       echo "::endgroup::"
       echo '::group::`_build/log`'
       printf '%s"dune %s" exited with code %d\n' \
-        "$ERRORPREFIX" "$*" "$status" 1>&2
+        "$ERRORPREFIX" "$*" "$status"
       cat "$SETUPDUNEDIR/_build/log"
     elif test -e "$SETUPDUNEDIR/_build/trace.json"; then
       echo "::endgroup::"
       echo '::group::`_build/trace.json`'
       printf '%s"dune %s" exited with code %d\n' \
-        "$ERRORPREFIX" "$*" "$status" 1>&2
+        "$ERRORPREFIX" "$*" "$status"
       (set -x; cd "$SETUPDUNEDIR" && dune trace cat)
     else
       printf '%s"dune %s" exited with code %d\n' \
-        "$ERRORPREFIX" "$*" "$status" 1>&2
+        "$ERRORPREFIX" "$*" "$status"
     fi
     exit "$status"
   fi
