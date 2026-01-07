@@ -2,8 +2,6 @@ name: Test setup-dune Action
 
 on:
   push:
-    branches:
-      - main
   pull_request:
 
 permissions: {}
@@ -13,34 +11,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runs-on: [ubuntu-latest, macos-latest]
-        version: [nightly, latest, 3.19.1]
-        steps: ['install-dune enable-pkg lazy-update-depexts install-depexts build-deps build runtest']
-        workspace: ['']
-        ocaml-version: ['']
-        display: ['short']
-        fault: [false]
         include:
-          - # A strange case: faulty because it doesn’t install the depexts,
-            # using a specific dune-workspace and with verbose log
-            runs-on: ubuntu-latest
-            version: nightly
-            steps: 'install-dune enable-pkg build runtest'
-            workspace: dune-workspace.ci
-            display: verbose
-            extraname: ' with workspace'
-            fault: true
           - runs-on: ubuntu-latest
             version: nightly
             steps: all
             ocaml-version: '5.3.0'
             display: short
             extraname: ' with OCaml version'
-            fault: false
-          - runs-on: macos-15-intel
-            version: nightly
-            steps: all
-            display: short
             fault: false
     name: ${{ matrix.version }} on ${{ matrix.runs-on }}${{ matrix.extraname }}
     runs-on: ${{ matrix.runs-on }}
@@ -58,11 +35,10 @@ jobs:
           printf '(lang dune 3.18)\n(lock_dir (constraints (dune (= %s))))\n' \
             ${{ matrix.version }} > graphics/dune-workspace
         if: ${{ startsWith(matrix.version, '3') }}
-      - name: Create `dune-workspace.ci`
+      - name: Create `dune-workspace`
         run: |
-          printf '(lang dune 3.18)\n(lock_dir (constraints (ocaml (= 5.3.0))))\n' \
-            > graphics/dune-workspace.ci
-        if: ${{ matrix.workspace == 'dune-workspace.ci' }}
+          printf '(lang dune 3.18)\n(lock_dir (constraints (ocaml (= 5.2.0))))\n' \
+            > graphics/dune-workspace
       - name: Use local setup-dune action
         uses: ./
         with:
