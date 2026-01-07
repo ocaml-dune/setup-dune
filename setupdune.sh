@@ -85,12 +85,7 @@ set-ocaml-version() {
         abort "'workspace' and 'ocaml-version' cannot be set at the same time"
       fi
       if test -e "$SETUPDUNEDIR/dune-workspace"; then
-        abort "Setting 'ocaml-version' is not supported on projects that have "\
-          "a 'dune-workspace' file as this feature requires editing the "\
-          "workspace configuration. Please remove the 'dune-workspace' from "\
-          "your project or unset 'ocaml-version' in the configuration and "\
-          "add a version constraint for OCaml directly in your "\
-          "'dune-workspace' lock dir configuration."
+        abort "Setting 'ocaml-version' is not supported on projects that have a 'dune-workspace' file as this feature requires editing the workspace configuration. Please remove the 'dune-workspace' from your project or unset 'ocaml-version' in the configuration and add a version constraint for OCaml directly in your 'dune-workspace' lock dir configuration."
       fi
       SETUPDUNEWORKSPACE=dune-workspace.setup-dune
       (set -x; cat "$SETUPDUNEDIR/dune-workspace.setup-dune")
