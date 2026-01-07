@@ -25,13 +25,15 @@ jobs:
 
 ## Inputs
 
-| Key         | Meaning                                                                | Default value           |
-| ----------- | ---------------------------------------------------------------------- | ----------------------- |
-| `version`   | version of dune to use                                                 | `nightly`               |
-| `steps`     | which steps should be run                                              | `all`                   |
-| `directory` | where is the project that should be built and tested                   | current directory (`.`) |
-| `workspace` | argument for the `--workspace` option (relative to `directory`)        | empty (Dune’s default)  |
-| `display`   | argument for the `--display` option                                    | empty (Dune’s default)  |
+| Key             | Meaning                                                                                               | Default value                 |
+| --------------- | ----------------------------------------------------------------------------------------------------- | ----------------------------- |
+| `version`       | version of dune to use                                                                                | `nightly`                     |
+| `steps`         | which steps should be run                                                                             | `all`                         |
+| `directory`     | where is the project that should be built and tested                                                  | current directory (`.`)       |
+| `workspace`     | argument for the `--workspace` option (relative to `directory`)                                       | Dune’s default                |
+| `ocaml-version` | constraint for the OCaml version (conflicts with `workspace`, overrides an eventual `dune-workspace`) | no constraint, Dune’s default |
+| `display`       | argument for the `--display` option                                                                   | Dune’s default                |
+| `cache-prefix`  | prefix for the GitHub Action cache keys                                                               | `v1`                          |
 
 
 ### Details
@@ -47,11 +49,16 @@ The `version` can have the following special values:
 `steps` should be either a space-separated list of the steps to perform or one
 of two special values.
 
-- The steps are named: `install-dune`, `enable-pkg`, `lazy-update-depexts`,
-  `install-gpatch`, `install-depexts`, `build-deps`, `build`, and `runtest`.
+- The steps are named: `install-dune`, `enable-pkg`, `set-ocaml-version`,
+  `lazy-update-depexts`, `install-gpatch`, `install-depexts`, `build-deps`,
+  `build`, and `runtest`.
 
   - `enable-pkg` enables Dune package management by creating a configuration
     containing `(pkg enabled)` (for Dune 3.21 or later).
+  - `set-ocaml-version` generates a `dune-workspace.setup-dune` file that sets a
+    constraints on the version of the `ocaml` package; as it is using a
+    `dune-workspace` file, it overrides the `dune-workspace` file if it exists
+    and it conflicts with setting `workspace`.
   - `lazy-update-depexts`, when present, will trigger a `brew update` or
     `apt-get update` just before any other external dependency installation
     (during `install-gpatch` on macOS or on `install-depexts` on all OSes); if
