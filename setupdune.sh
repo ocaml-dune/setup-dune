@@ -25,6 +25,12 @@ dune_aux() {
       printf '%s"dune %s" exited with code %d\n' \
         "$ERRORPREFIX" "$*" "$status" 1>&2
       cat "$SETUPDUNEDIR/_build/log"
+    elif test -e "$SETUPDUNEDIR/_build/trace.json"; then
+      echo "::endgroup::"
+      echo '::group::`_build/trace.json`'
+      printf '%s"dune %s" exited with code %d\n' \
+        "$ERRORPREFIX" "$*" "$status" 1>&2
+      (set -x; cd "$SETUPDUNEDIR" && dune trace cat)
     else
       printf '%s"dune %s" exited with code %d\n' \
         "$ERRORPREFIX" "$*" "$status" 1>&2
