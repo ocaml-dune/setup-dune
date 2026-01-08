@@ -1,6 +1,6 @@
 #!/bin/bash
 # SPDX-License-Identifier: MIT
-# Copyright (c) 2025 Samuel Hym, Tarides <samuel@tarides.com>
+# Copyright (c) 2025-2026 Samuel Hym, Tarides <samuel@tarides.com>
 
 set -euo pipefail
 
