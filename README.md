@@ -77,6 +77,23 @@ It can be useful to set an explicit value for `steps` for instance when:
 | ---------------- | ----------------------------------------------------------- |
 | `dune-cache-hit` | whether the Dune cache was found in the GitHub Action cache |
 
+## How to set the version of OCaml (or another package) to use?
+
+To test the build of your project with, for instance, OCaml 5.3.0, create a
+workspace file, for instance `dune-workspace.ci`, containing:
+
+```dune
+(lang dune 3.18)
+
+(lock_dir
+ (constraints
+  (ocaml
+   (= 5.3.0))))
+```
+
+and set the `workspace` input to `dune-workspace.ci`. This is exactly how it is
+done in this action’s own [CI workflow](.github/workflows/test-action.yml).
+
 ## Contributions
 
 Contributions are most welcome!
