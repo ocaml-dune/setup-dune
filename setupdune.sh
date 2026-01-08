@@ -21,13 +21,13 @@ dune_aux() {
   if ! test "$status" = 0; then
     if test -e "$SETUPDUNEDIR/_build/log"; then
       echo "::endgroup::"
-      echo '::group::`_build/log`'
+      echo '::group::Show the build log'
       printf '%s"dune %s" exited with code %d\n' \
         "$ERRORPREFIX" "$*" "$status"
       cat "$SETUPDUNEDIR/_build/log"
     elif test -e "$SETUPDUNEDIR/_build/trace.json"; then
       echo "::endgroup::"
-      echo '::group::`_build/trace.json`'
+      echo '::group::Show the build trace'
       printf '%s"dune %s" exited with code %d\n' \
         "$ERRORPREFIX" "$*" "$status"
       (set -x; cd "$SETUPDUNEDIR" && dune trace cat)
