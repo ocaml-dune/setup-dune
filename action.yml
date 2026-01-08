@@ -26,6 +26,10 @@ inputs:
     description: 'Prefix of the cache keys'
     required: false
     default: v1
+  only-packages:
+    description: 'Restrict operations to only these packages (comma-separated list)'
+    required: false
+    default: ''
 outputs:
   dune-cache-hit:
     description: 'A boolean value to indicate the Dune cache was found in the GHA cache'
@@ -68,6 +72,7 @@ runs:
         SETUPDUNEWORKSPACE: ${{ inputs.workspace }}
         SETUPDUNEDISPLAY: ${{ inputs.display }}
         SETUPDUNESTEPS: ${{ inputs.steps }}
+        SETUPDUNEONLYPACKAGES: ${{ inputs.only-packages }}
         OS: ${{ runner.os }}
         ACTIONPATH: ${{ github.action_path }}
       run: |

@@ -33,6 +33,7 @@ jobs:
 | `workspace`    | argument for the `--workspace` option (relative to `directory`) | Dune’s default          |
 | `display`      | argument for the `--display` option                             | Dune’s default          |
 | `cache-prefix` | prefix for the GitHub Action cache keys                         | `v1`                    |
+| `only-packages` | restrict operations to only these packages (comma-separated)   | empty (all packages)    |
 
 
 ### Details
@@ -93,6 +94,21 @@ workspace file, for instance `dune-workspace.ci`, containing:
 
 and set the `workspace` input to `dune-workspace.ci`. This is exactly how it is
 done in this action’s own [CI workflow](.github/workflows/test-action.yml).
+
+## How to restrict the set of packages to operate on
+
+Sometimes, one isn't interested in building the whole workspace in a dune
+project. A subset of packages can be sufficient. The `only-packages` option
+restricts the set of packages to consider, which is useful for repositories with
+multiple packages where not all packages are available at all OCaml versions
+tested in CI. For example:
+
+```yaml
+- name: Use dune
+  uses: ocaml-dune/setup-dune@v2
+  with:
+    only-packages: foo,bar
+```
 
 ## Contributions
 
