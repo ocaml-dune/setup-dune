@@ -32,7 +32,7 @@ jobs:
 | `directory` | where is the project that should be built and tested                   | current directory (`.`) |
 | `workspace` | argument for the `--workspace` option (relative to `directory`)        | empty (Dune’s default)  |
 | `display`   | argument for the `--display` option                                    | empty (Dune’s default)  |
-| `only-packages` | restrict `pkg lock` and `build` to only these packages (comma-separated) | empty (all packages) |
+| `only-packages` | restrict operations to only these packages (comma-separated)       | empty (all packages)    |
 
 
 ### Details
@@ -71,16 +71,17 @@ It can be useful to set an explicit value for `steps` for instance when:
   `setup-dune` more than once but still install dune and run `{apt,brew} update`
   (if needed) only the first time.
 
-The `only-packages` option restricts the scope of `pkg lock`, `build`, and
-`runtest` steps to only operate on the specified packages. This is useful for
-repositories with multiple packages where not all packages are available at all
-OCaml versions tested in CI. For example:
+Sometimes, one isn't interested in building the whole workspace in a dune
+project. A subset of packages can be sufficient. The `only-packages` option
+restricts the set of packages to consider, which is useful for repositories with
+multiple packages where not all packages are available at all OCaml versions
+tested in CI. For example:
 
 ```yaml
 - name: Use dune
   uses: ocaml-dune/setup-dune@v2
   with:
-    only-packages: my-package,my-package-tests
+    only-packages: foo,bar,baz
 ```
 
 ## Outputs

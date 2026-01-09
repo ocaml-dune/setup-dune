@@ -23,7 +23,7 @@ inputs:
     required: false
     default: ''
   only-packages:
-    description: 'Restrict pkg lock and build to only these packages (comma-separated list)'
+    description: 'Restrict operations to only these packages (comma-separated list)'
     required: false
     default: ''
 outputs:
