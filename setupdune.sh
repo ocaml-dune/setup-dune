@@ -9,15 +9,10 @@ abort() {
   exit 2
 }
 
-dune_aux_internal() {
-  # Internal helper: runs dune with workspace and display flags
-  # Use dune_aux or dune_aux_only_packages instead of calling this directly
-  local only_packages_flag="$1"
-  shift
+dune_aux() {
   status=0
   (set -x; cd "$SETUPDUNEDIR" && \
     dune "$@" \
-      ${only_packages_flag:+--only-packages="$only_packages_flag"} \
       ${SETUPDUNEWORKSPACE:+--workspace="$SETUPDUNEWORKSPACE"} \
       ${SETUPDUNEDISPLAY:+--display="$SETUPDUNEDISPLAY"}) \
     || status=$?
@@ -34,16 +29,6 @@ dune_aux_internal() {
     fi
     exit "$status"
   fi
-}
-
-dune_aux() {
-  # Run dune without --only-packages flag
-  dune_aux_internal "" "$@"
-}
-
-dune_aux_only_packages() {
-  # Run dune with --only-packages flag (if SETUPDUNEONLYPACKAGES is set)
-  dune_aux_internal "$SETUPDUNEONLYPACKAGES" "$@"
 }
 
 install-dune() {
@@ -64,7 +49,8 @@ install-dune() {
 enable-pkg() {
   case "$(dune --version)" in
     3.19*|3.20*)
-      (set -x; cd "$SETUPDUNEDIR" && test -d dune.lock) || dune_aux_only_packages pkg lock
+      (set -x; cd "$SETUPDUNEDIR" && test -d dune.lock) || dune_aux pkg lock \
+        ${SETUPDUNEONLYPACKAGES:+--only-packages="$SETUPDUNEONLYPACKAGES"}
       ;;
     *)
       CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/dune"
@@ -128,15 +114,18 @@ install-depexts() {
 }
 
 build-deps() {
-  dune_aux_only_packages build @pkg-install
+  dune_aux build @pkg-install \
+    ${SETUPDUNEONLYPACKAGES:+--only-packages="$SETUPDUNEONLYPACKAGES"}
 }
 
 build() {
-  dune_aux_only_packages build
+  dune_aux build \
+    ${SETUPDUNEONLYPACKAGES:+--only-packages="$SETUPDUNEONLYPACKAGES"}
 }
 
 runtest() {
-  dune_aux_only_packages runtest
+  dune_aux runtest \
+    ${SETUPDUNEONLYPACKAGES:+--only-packages="$SETUPDUNEONLYPACKAGES"}
 }
 
 expand_steps() {
