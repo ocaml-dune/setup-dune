@@ -32,6 +32,7 @@ jobs:
 | `directory` | where is the project that should be built and tested                   | current directory (`.`) |
 | `workspace` | argument for the `--workspace` option (relative to `directory`)        | empty (Dune’s default)  |
 | `display`   | argument for the `--display` option                                    | empty (Dune’s default)  |
+| `only-packages` | restrict operations to only these packages (comma-separated)       | empty (all packages)    |
 
 
 ### Details
@@ -69,6 +70,19 @@ It can be useful to set an explicit value for `steps` for instance when:
 - you have a repository with more than one project and you want to trigger
   `setup-dune` more than once but still install dune and run `{apt,brew} update`
   (if needed) only the first time.
+
+Sometimes, one isn't interested in building the whole workspace in a dune
+project. A subset of packages can be sufficient. The `only-packages` option
+restricts the set of packages to consider, which is useful for repositories with
+multiple packages where not all packages are available at all OCaml versions
+tested in CI. For example:
+
+```yaml
+- name: Use dune
+  uses: ocaml-dune/setup-dune@v2
+  with:
+    only-packages: foo,bar,baz
+```
 
 ## Outputs
 
