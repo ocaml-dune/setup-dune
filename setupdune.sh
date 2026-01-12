@@ -4,7 +4,7 @@
 
 set -euo pipefail
 
-: ${ERRORPREFIX:="::error::Fatal error: "}
+: "${ERRORPREFIX:="::error::Fatal error: "}"
 
 abort() {
   printf '%s%s\n' "$ERRORPREFIX" "$1"
