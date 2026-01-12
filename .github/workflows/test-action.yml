@@ -21,22 +21,29 @@ jobs:
         cache-prefix: ['v1']
         fault: [false]
         include:
-          - # A strange case: faulty because it doesn’t install the depexts,
-            # using a specific dune-workspace and with verbose log
+          - # A strange case: faulty because it doesn’t install the depexts
             runs-on: ubuntu-latest
             version: nightly
             steps: 'install-dune enable-pkg build runtest'
-            workspace: dune-workspace.ci
             display: short
             extraname: ' with fault'
             cache-prefix: 'fault'
             fault: true
           - runs-on: ubuntu-latest
+            version: nightly
+            steps: all
+            workspace: dune-workspace.ci
+            display: short
+            extraname: ' with workspace'
+            cache-prefix: 'ws'
+            fault: false
+          - runs-on: ubuntu-latest
             version: latest
             steps: all
             workspace: dune-workspace.ci
+            context: ocaml-5.3.0
             display: verbose
-            extraname: ' with workspace'
+            extraname: ' with context'
             cache-prefix: 'ws'
             fault: false
           - runs-on: macos-15-intel
@@ -62,9 +69,25 @@ jobs:
             ${{ matrix.version }} > graphics/dune-workspace
         if: ${{ startsWith(matrix.version, '3') }}
       - name: Create `dune-workspace.ci`
+        env:
+          WS: |
+            (lang dune 3.18)
+
+            (context
+             (default
+              (name ocaml-%s)
+              (lock_dir ocaml-%s.lock)))
+
+            (lock_dir
+             (path ocaml-%s.lock)
+             (constraints
+              (ocaml
+               (= %s))))
+          VERSION: "5.3.0"
         run: |
-          printf '(lang dune 3.18)\n(lock_dir (constraints (ocaml (= 5.3.0))))\n' \
+          printf "$WS" "$VERSION" "$VERSION" "$VERSION" "$VERSION" \
             > graphics/dune-workspace.ci
+          (set -x; cat graphics/dune-workspace.ci)
         if: ${{ matrix.workspace == 'dune-workspace.ci' }}
       - name: Use local setup-dune action
         uses: ./
