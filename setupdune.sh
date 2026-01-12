@@ -57,7 +57,8 @@ install-dune() {
 enable-pkg() {
   case "$(dune --version)" in
     3.19*|3.20*)
-      (set -x; cd "$SETUPDUNEDIR" && test -d dune.lock) || dune_aux pkg lock
+      (set -x; cd "$SETUPDUNEDIR" && test -d dune.lock) \
+        || dune_aux pkg lock ${SETUPDUNECONTEXT:+"$SETUPDUNECONTEXT.lock"}
       ;;
     *)
       CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/dune"
@@ -101,7 +102,8 @@ install-gpatch() {
 install-depexts() {
   DEPEXTS="$(cd "$SETUPDUNEDIR" >/dev/null && \
              dune show depexts \
-               ${SETUPDUNEWORKSPACE:+--workspace="$SETUPDUNEWORKSPACE"} 2>&1)" \
+               ${SETUPDUNEWORKSPACE:+--workspace="$SETUPDUNEWORKSPACE"} \
+               ${SETUPDUNECONTEXT:+--context="$SETUPDUNECONTEXT"} 2>&1)" \
     || abort "got \"$DEPEXTS\" when listing depexts"
   case "$OS,$DEPEXTS" in
     *,) # No depexts to install
@@ -120,15 +122,15 @@ install-depexts() {
 }
 
 build-deps() {
-  dune_aux build @pkg-install
+  dune_aux build @${SETUPDUNECONTEXT:+"_build/$SETUPDUNECONTEXT/"}pkg-install
 }
 
 build() {
-  dune_aux build
+  dune_aux build ${SETUPDUNECONTEXT:+"_build/$SETUPDUNECONTEXT/"}
 }
 
 runtest() {
-  dune_aux runtest
+  dune_aux runtest ${SETUPDUNECONTEXT:+"_build/$SETUPDUNECONTEXT/"}
 }
 
 expand_steps() {
