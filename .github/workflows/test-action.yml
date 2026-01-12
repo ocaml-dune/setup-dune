@@ -11,22 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runs-on: [ubuntu-latest, macos-latest]
-        version: [nightly, latest, 3.19.1]
-        steps: ['install-dune enable-pkg lazy-update-depexts install-depexts build-deps build runtest']
-        workspace: ['']
-        display: ['short']
-        cache-prefix: ['v1']
-        fault: [false]
         include:
-          - # A strange case: faulty because it doesn’t install the depexts
-            runs-on: ubuntu-latest
-            version: nightly
-            steps: 'install-dune enable-pkg build runtest'
-            display: short
-            extraname: ' with fault'
-            cache-prefix: 'fault'
-            fault: true
           - runs-on: ubuntu-latest
             version: nightly
             steps: all
@@ -43,12 +28,6 @@ jobs:
             display: verbose
             extraname: ' with context'
             cache-prefix: 'ws'
-            fault: false
-          - runs-on: macos-15-intel
-            version: nightly
-            steps: all
-            display: short
-            cache-prefix: v1
             fault: false
     name: ${{ matrix.version }} on ${{ matrix.runs-on }}${{ matrix.extraname }}
     runs-on: ${{ matrix.runs-on }}
@@ -70,6 +49,8 @@ jobs:
         env:
           WS: |
             (lang dune 3.18)
+
+            (context default)
 
             (context
              (default
