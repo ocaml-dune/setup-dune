@@ -25,13 +25,14 @@ jobs:
 
 ## Inputs
 
-| Key         | Meaning                                                                | Default value           |
-| ----------- | ---------------------------------------------------------------------- | ----------------------- |
-| `version`   | version of dune to use                                                 | `nightly`               |
-| `steps`     | which steps should be run                                              | `all`                   |
-| `directory` | where is the project that should be built and tested                   | current directory (`.`) |
-| `workspace` | argument for the `--workspace` option (relative to `directory`)        | empty (Dune’s default)  |
-| `display`   | argument for the `--display` option                                    | empty (Dune’s default)  |
+| Key            | Meaning                                                         | Default value           |
+| -------------- | --------------------------------------------------------------- | ----------------------- |
+| `version`      | version of dune to use                                          | `nightly`               |
+| `steps`        | which steps should be run                                       | `all`                   |
+| `directory`    | where is the project that should be built and tested            | current directory (`.`) |
+| `workspace`    | argument for the `--workspace` option (relative to `directory`) | Dune’s default          |
+| `display`      | argument for the `--display` option                             | Dune’s default          |
+| `cache-prefix` | prefix for the GitHub Action cache keys                         | `v1`                    |
 
 
 ### Details
@@ -75,6 +76,23 @@ It can be useful to set an explicit value for `steps` for instance when:
 | Key              | Meaning                                                     |
 | ---------------- | ----------------------------------------------------------- |
 | `dune-cache-hit` | whether the Dune cache was found in the GitHub Action cache |
+
+## How to set the version of OCaml (or another package) to use?
+
+To test the build of your project with, for instance, OCaml 5.3.0, create a
+workspace file, for instance `dune-workspace.ci`, containing:
+
+```dune
+(lang dune 3.18)
+
+(lock_dir
+ (constraints
+  (ocaml
+   (= 5.3.0))))
+```
+
+and set the `workspace` input to `dune-workspace.ci`. This is exactly how it is
+done in this action’s own [CI workflow](.github/workflows/test-action.yml).
 
 ## Contributions
 

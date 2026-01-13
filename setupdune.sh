@@ -1,11 +1,13 @@
 #!/bin/bash
 # SPDX-License-Identifier: MIT
-# Copyright (c) 2025 Samuel Hym, Tarides <samuel@tarides.com>
+# Copyright (c) 2025-2026 Samuel Hym, Tarides <samuel@tarides.com>
 
 set -euo pipefail
 
+: "${ERRORPREFIX:="::error::Fatal error: "}"
+
 abort() {
-  printf '::error title=Fatal error::%s\n' "$1" 1>&2
+  printf '%s%s\n' "$ERRORPREFIX" "$1"
   exit 2
 }
 
@@ -19,13 +21,19 @@ dune_aux() {
   if ! test "$status" = 0; then
     if test -e "$SETUPDUNEDIR/_build/log"; then
       echo "::endgroup::"
-      echo '::group::`_build/log`'
-      printf '::error title=Fatal error::"dune %s" exited with code %d\n' \
-        "$*" "$status" 1>&2
+      echo '::group::Show the build log'
+      printf '%s"dune %s" exited with code %d\n' \
+        "$ERRORPREFIX" "$*" "$status"
       cat "$SETUPDUNEDIR/_build/log"
+    elif test -e "$SETUPDUNEDIR/_build/trace.json"; then
+      echo "::endgroup::"
+      echo '::group::Show the build trace'
+      printf '%s"dune %s" exited with code %d\n' \
+        "$ERRORPREFIX" "$*" "$status"
+      (set -x; cd "$SETUPDUNEDIR" && dune trace cat)
     else
-      printf '::error title=Fatal error::"dune %s" exited with code %d\n' \
-        "$*" "$status" 1>&2
+      printf '%s"dune %s" exited with code %d\n' \
+        "$ERRORPREFIX" "$*" "$status"
     fi
     exit "$status"
   fi
