@@ -1,9 +1,5 @@
 # `setup-dune`: a GitHub Action to install Dune and optionally build a project with Dune package management
 
-This is the `README.md` for the latest released version of the action. Read
-[`README.dev.md`](README.dev.md) instead for the documentation for this
-development branch.
-
 ## How to use it
 
 Create a `.github/workflows/dune.yml` file with something like:
