@@ -15,6 +15,7 @@ dune_aux() {
   status=0
   (set -x; cd "$SETUPDUNEDIR" && \
     dune "$@" \
+      ${SETUPDUNEONLYPACKAGES:+--only-packages="$SETUPDUNEONLYPACKAGES"} \
       ${SETUPDUNEWORKSPACE:+--workspace="$SETUPDUNEWORKSPACE"} \
       ${SETUPDUNEDISPLAY:+--display="$SETUPDUNEDISPLAY"}) \
     || status=$?
@@ -57,8 +58,7 @@ install-dune() {
 enable-pkg() {
   case "$(dune --version)" in
     3.19*|3.20*)
-      (set -x; cd "$SETUPDUNEDIR" && test -d dune.lock) || dune_aux pkg lock \
-        ${SETUPDUNEONLYPACKAGES:+--only-packages="$SETUPDUNEONLYPACKAGES"}
+      (set -x; cd "$SETUPDUNEDIR" && test -d dune.lock) || dune_aux pkg lock
       ;;
     *)
       CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/dune"
@@ -122,18 +122,15 @@ install-depexts() {
 }
 
 build-deps() {
-  dune_aux build @pkg-install \
-    ${SETUPDUNEONLYPACKAGES:+--only-packages="$SETUPDUNEONLYPACKAGES"}
+  dune_aux build @pkg-install
 }
 
 build() {
-  dune_aux build \
-    ${SETUPDUNEONLYPACKAGES:+--only-packages="$SETUPDUNEONLYPACKAGES"}
+  dune_aux build
 }
 
 runtest() {
-  dune_aux runtest \
-    ${SETUPDUNEONLYPACKAGES:+--only-packages="$SETUPDUNEONLYPACKAGES"}
+  dune_aux runtest
 }
 
 expand_steps() {
