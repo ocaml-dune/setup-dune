@@ -45,7 +45,7 @@ runs:
             echo "BUILDDIR=$PWD/_build" >> "$GITHUB_ENV"
             ;;
           *)
-            echo "BUILDDIR=$PWD/$SETUPDUNEDIR/_build" >> "$GITHUB_ENV"
+            echo "BUILDDIR=$PWD/${SETUPDUNEDIR#./}/_build" >> "$GITHUB_ENV"
             ;;
         esac
     - name: Cache dune’s cache and build artefacts
