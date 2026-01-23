@@ -36,6 +36,7 @@ jobs:
 | `directory`    | where is the project that should be built and tested            | current directory (`.`) |
 | `workspace`    | argument for the `--workspace` option (relative to `directory`) | Dune’s default          |
 | `display`      | argument for the `--display` option                             | Dune’s default          |
+| `only-packages` | argument for the `--only-packages` option (comma-separated)    | Dune’s default          |
 | `cache-prefix` | prefix for the GitHub Action cache keys                         | `v1`                    |
 
 
