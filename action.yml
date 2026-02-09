@@ -26,10 +26,14 @@ inputs:
     description: 'Prefix of the cache keys'
     required: false
     default: v1
+  cache-readonly:
+    description: 'Restore cache but do not save it (useful for PRs to avoid cache eviction)'
+    required: false
+    default: 'false'
 outputs:
   dune-cache-hit:
     description: 'A boolean value to indicate the Dune cache was found in the GHA cache'
-    value: ${{ steps.dune-cache.outputs.cache-hit }}
+    value: ${{ steps.dune-cache.outputs.cache-hit || steps.dune-cache-readonly.outputs.cache-hit }}
 runs:
   using: 'composite'
   steps:
@@ -49,8 +53,21 @@ runs:
             ;;
         esac
     - name: Cache dune’s cache and build artefacts
+      if: inputs.cache-readonly != 'true'
       uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
       id: dune-cache
+      with:
+        path: |
+          ${{ env.DUNE_CACHE_ROOT }}
+          ${{ env.BUILDDIR }}
+        key: ${{ inputs.cache-prefix }}-dune-${{ inputs.version }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles(format('{0}/dune-project',inputs.directory)) }}-${{ github.sha }}
+        restore-keys: |
+          ${{ inputs.cache-prefix }}-dune-${{ inputs.version }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles(format('{0}/dune-project',inputs.directory)) }}-
+          ${{ inputs.cache-prefix }}-dune-${{ inputs.version }}-${{ runner.os }}-${{ runner.arch }}-
+    - name: Restore dune’s cache and build artefacts (cache-readonly)
+      if: inputs.cache-readonly == 'true'
+      uses: actions/cache/restore@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
+      id: dune-cache-readonly
       with:
         path: |
           ${{ env.DUNE_CACHE_ROOT }}
