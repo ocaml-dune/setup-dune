@@ -75,6 +75,7 @@ jobs:
           workspace: ${{ matrix.workspace }}
           display: ${{ matrix.display }}
           cache-prefix: ${{ matrix.cache-prefix }}
+          cache-readonly: ${{ github.ref != 'refs/heads/main' }}
         continue-on-error: ${{ matrix.fault }}
       - name: Show dune version
         run: dune --version
