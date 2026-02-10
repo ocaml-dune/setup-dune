@@ -13,27 +13,24 @@ abort() {
 
 dune_aux() {
   status=0
+  trace_file="_build/trace-$*.$SETUPDUNE_TRACEEXT"
+  trace_file="${trace_file// /_}"
   (set -x; cd "$SETUPDUNEDIR" && \
     dune "$@" \
+      --trace-file="$trace_file" \
       ${SETUPDUNEWORKSPACE:+--workspace="$SETUPDUNEWORKSPACE"} \
       ${SETUPDUNEDISPLAY:+--display="$SETUPDUNEDISPLAY"}) \
     || status=$?
   if ! test "$status" = 0; then
+    echo "::endgroup::"
+    echo '::group::Show the build trace'
+    printf '%s"dune %s" exited with code %d\n' \
+      "$ERRORPREFIX" "$*" "$status"
     if test -e "$SETUPDUNEDIR/_build/log"; then
-      echo "::endgroup::"
-      echo '::group::Show the build log'
-      printf '%s"dune %s" exited with code %d\n' \
-        "$ERRORPREFIX" "$*" "$status"
       cat "$SETUPDUNEDIR/_build/log"
-    elif test -e "$SETUPDUNEDIR/_build/trace.json"; then
-      echo "::endgroup::"
-      echo '::group::Show the build trace'
-      printf '%s"dune %s" exited with code %d\n' \
-        "$ERRORPREFIX" "$*" "$status"
-      (set -x; cd "$SETUPDUNEDIR" && dune trace cat)
     else
-      printf '%s"dune %s" exited with code %d\n' \
-        "$ERRORPREFIX" "$*" "$status"
+      (set -x; cd "$SETUPDUNEDIR" && \
+        dune trace commands --trace-file="$trace_file")
     fi
     exit "$status"
   fi
@@ -52,6 +49,14 @@ install-dune() {
       ;;
   esac
   (set -x; dune --version)
+  case "$(dune --version)" in
+    3.19*|3.20*|3.21*)
+      SETUPDUNE_TRACEEXT=json
+      ;;
+    *)
+      SETUPDUNE_TRACEEXT=csexp
+      ;;
+  esac
 }
 
 enable-pkg() {
