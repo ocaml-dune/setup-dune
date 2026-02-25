@@ -1,8 +1,9 @@
 # `setup-dune`: a GitHub Action to install Dune and optionally build a project with Dune package management
 
-This is the `README.md` for the latest released version of the action. Read
-[`README.dev.md`](README.dev.md) instead for the documentation for this
-development branch.
+> [!NOTE]
+> The documentation for `setup-dune` v2.0.0 is available [there].
+
+[there]: https://github.com/ocaml-dune/setup-dune/blob/v2.0.0/README.md
 
 ## How to use it
 
