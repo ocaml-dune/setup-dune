@@ -26,6 +26,10 @@ inputs:
     description: 'Prefix of the cache keys'
     required: false
     default: v1
+  traces-as-artifact:
+    description: 'Whether the Dune traces should be uploaded as artifact (on-failure (default), always, or never)'
+    required: false
+    default: on-failure
 outputs:
   dune-cache-hit:
     description: 'A boolean value to indicate the Dune cache was found in the GHA cache'
@@ -72,3 +76,11 @@ runs:
         ACTIONPATH: ${{ github.action_path }}
       run: |
         bash "$ACTIONPATH/setupdune.sh"
+    - name: Upload trace or log
+      uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+      with:
+        name: ${{ inputs.cache-prefix }}-trace-${{ inputs.version }}-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
+        path: |
+          ${{ inputs.directory }}/_build/log
+          ${{ inputs.directory }}/_build/trace*
+      if: ${{ (failure() && inputs.traces-as-artifact == 'on-failure') || (always() && inputs.traces-as-artifact == 'always') }}
