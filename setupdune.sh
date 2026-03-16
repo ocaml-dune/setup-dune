@@ -37,18 +37,20 @@ dune_aux() {
 }
 
 install-dune() {
+  # Whether the version should be explicit set in the installer
   case "$SETUPDUNEVERSION" in
     nightly|dev)
-      (set -x; curl -fsSL https://get.dune.build/install | sh)
+      explicit=
       ;;
-    latest)
-      (set -x; curl -fsSL4 https://github.com/ocaml-dune/dune-bin-install/releases/download/v3/install.sh | sh -s -- --install-root "$HOME/.local" --no-update-shell-config)
-      ;;
-    *)
-      (set -x; curl -fsSL4 https://github.com/ocaml-dune/dune-bin-install/releases/download/v3/install.sh | sh -s -- "$SETUPDUNEVERSION" --install-root "$HOME/.local" --no-update-shell-config)
+    latest|*)
+      explicit=y
       ;;
   esac
-  (set -x; dune --version)
+  (set -x;
+    curl -fsSL https://get.dune.build/install | \
+      sh -s ${explicit:+-- --release "$SETUPDUNEVERSION"}
+    command -v dune
+    dune --version)
   case "$(dune --version)" in
     3.19*|3.20*|3.21*)
       SETUPDUNE_TRACEEXT=json
