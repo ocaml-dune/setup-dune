@@ -20,6 +20,7 @@ jobs:
         display: ['short']
         cache-prefix: ['v1']
         fault: [false]
+        traces-as-artifact: [on-failure]
         include:
           - # A strange case: faulty because it doesn’t install the depexts,
             # using a specific dune-workspace and with verbose log
@@ -31,6 +32,7 @@ jobs:
             extraname: ' with fault'
             cache-prefix: 'fault'
             fault: true
+            traces-as-artifact: on-failure
           - runs-on: ubuntu-latest
             version: latest
             steps: all
@@ -39,12 +41,14 @@ jobs:
             extraname: ' with workspace'
             cache-prefix: 'ws'
             fault: false
+            traces-as-artifact: on-failure
           - runs-on: macos-15-intel
             version: nightly
             steps: all
             display: short
             cache-prefix: v1
             fault: false
+            traces-as-artifact: always
     name: ${{ matrix.version }} on ${{ matrix.runs-on }}${{ matrix.extraname }}
     runs-on: ${{ matrix.runs-on }}
     steps:
@@ -75,6 +79,7 @@ jobs:
           workspace: ${{ matrix.workspace }}
           display: ${{ matrix.display }}
           cache-prefix: ${{ matrix.cache-prefix }}
+          traces-as-artifact: ${{ matrix.traces-as-artifact }}
         continue-on-error: ${{ matrix.fault }}
       - name: Show dune version
         run: dune --version
