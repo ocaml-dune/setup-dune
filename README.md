@@ -39,6 +39,7 @@ jobs:
 | `display`            | argument for the `--display` option                             | Dune’s default          |
 | `cache-prefix`       | prefix for the GitHub Action cache keys                         | `v1`                    |
 | `traces-as-artifact` | when should traces be uploaded as an artifact                   | `on-failure`            |
+| `build-target`       | which target to build                                           | Dune’s default          |
 
 
 ### Details

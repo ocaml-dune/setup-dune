@@ -131,7 +131,11 @@ build-deps() {
 }
 
 build() {
-  dune_aux build
+  if [ -z "$SETUPDUNEBUILDTARGET" ]; then
+    dune_aux build
+  else
+    dune_aux build "$SETUPDUNEBUILDTARGET"
+  fi
 }
 
 runtest() {
