@@ -138,13 +138,19 @@ runtest() {
   dune_aux runtest
 }
 
+format() {
+  if test -e "$SETUPDUNEDIR/.ocamlformat"; then
+    dune_aux build @fmt
+  fi
+}
+
 expand_steps() {
   case "$OS,$SETUPDUNESTEPS" in
     "macOS,all")
-      STEPS="install-dune enable-pkg lazy-update-depexts install-gpatch install-depexts build-deps build runtest"
+      STEPS="install-dune enable-pkg lazy-update-depexts install-gpatch install-depexts build-deps build runtest format"
       ;;
     "Linux,all")
-      STEPS="install-dune enable-pkg lazy-update-depexts install-depexts build-deps build runtest"
+      STEPS="install-dune enable-pkg lazy-update-depexts install-depexts build-deps build runtest format"
       ;;
     "macOS,"|"Linux,")
       STEPS="install-dune"
@@ -174,7 +180,8 @@ main() {
   w "Install the external dependencies" install-depexts
   w "Build the dependencies" build-deps
   w "Build the project" build
-  w "Run the test" runtest
+  w "Run the tests" runtest
+  w "Check formatting" format
 }
 
 main
