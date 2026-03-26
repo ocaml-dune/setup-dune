@@ -2,8 +2,6 @@ name: Test setup-dune Action
 
 on:
   push:
-    branches:
-      - main
   pull_request:
 
 permissions: {}
