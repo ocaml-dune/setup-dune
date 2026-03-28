@@ -53,9 +53,9 @@ jobs:
     runs-on: ${{ matrix.runs-on }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Checkout `graphics`
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: ocaml/graphics
           ref: refs/tags/5.2.0
