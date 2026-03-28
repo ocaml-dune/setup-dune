@@ -19,6 +19,7 @@ dune_aux() {
     dune "$@" \
       --trace-file="$trace_file" \
       ${SETUPDUNEWORKSPACE:+--workspace="$SETUPDUNEWORKSPACE"} \
+      ${SETUPDUNEONLYPACKAGES:+--only-packages="$SETUPDUNEONLYPACKAGES"} \
       ${SETUPDUNEDISPLAY:+--display="$SETUPDUNEDISPLAY"}) \
     || status=$?
   if ! test "$status" = 0; then
@@ -108,6 +109,7 @@ install-gpatch() {
 install-depexts() {
   DEPEXTS="$(cd "$SETUPDUNEDIR" >/dev/null && \
              dune show depexts \
+               ${SETUPDUNEONLYPACKAGES:+--only-packages="$SETUPDUNEONLYPACKAGES"} \
                ${SETUPDUNEWORKSPACE:+--workspace="$SETUPDUNEWORKSPACE"} 2>&1)" \
     || abort "got \"$DEPEXTS\" when listing depexts"
   case "$OS,$DEPEXTS" in
