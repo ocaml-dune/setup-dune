@@ -59,7 +59,7 @@ install-dune() {
       ;;
   esac
   (set -x;
-    curl -fsSL https://get.dune.build/install | \
+    curl -fsSLv --http1.1 https://get.dune.build/install | \
       sh -s ${explicit:+-- --release "$SETUPDUNEVERSION"}
     command -v dune
     dune --version)
