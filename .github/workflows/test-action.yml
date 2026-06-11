@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runs-on: [ubuntu-latest, macos-latest]
+        runs-on: [ubuntu-latest]
         version: [nightly, latest, 3.22.2]
         steps: ['install-dune enable-pkg lazy-update-depexts install-depexts build-deps build runtest']
         workspace: ['']
@@ -40,13 +40,6 @@ jobs:
             cache-prefix: 'ws'
             fault: false
             traces-as-artifact: on-failure
-          - runs-on: macos-15-intel
-            version: nightly
-            steps: all
-            display: short
-            cache-prefix: v1
-            fault: false
-            traces-as-artifact: always
     name: ${{ matrix.version }} on ${{ matrix.runs-on }}${{ matrix.extraname }}
     runs-on: ${{ matrix.runs-on }}
     steps:

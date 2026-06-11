@@ -58,12 +58,11 @@ install-dune() {
       explicit=y
       ;;
   esac
+  sudo apt-get install traceroute
   (set -exo pipefail
-    for _ in 1 2 3 4 5 6 7 8 9 10; do
-      curl -fsSLv4 --http1.1 https://get.dune.build/install | \
-        sh -s ${explicit:+-- --release "$SETUPDUNEVERSION"} \
-        && break
-    done
+    curl -fsSLv4 --http1.1 https://get.dune.build/install | \
+      sh -s ${explicit:+-- --release "$SETUPDUNEVERSION"} \
+      || sudo traceroute -T -p 443 get.dune.build
     command -v dune
     dune --version)
   case "$(dune --version)" in
