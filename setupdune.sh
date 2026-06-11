@@ -58,9 +58,12 @@ install-dune() {
       explicit=y
       ;;
   esac
-  (set -x;
-    curl -fsSLv4 --http1.1 https://get.dune.build/install | \
-      sh -s ${explicit:+-- --release "$SETUPDUNEVERSION"}
+  (set -exo pipefail
+    for _ in 1 2 3 4 5 6 7 8 9 10; do
+      curl -fsSLv4 --http1.1 https://get.dune.build/install | \
+        sh -s ${explicit:+-- --release "$SETUPDUNEVERSION"} \
+        && break
+    done
     command -v dune
     dune --version)
   case "$(dune --version)" in
