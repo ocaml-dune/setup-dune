@@ -141,7 +141,7 @@ runtest() {
 
 format() {
   if test -e "$SETUPDUNEDIR/.ocamlformat"; then
-    DUNE_CONFIG__LOCK_DEV_TOOL=enabled dune_aux build @fmt
+    DUNE_CONFIG__LOCK_DEV_TOOL=enabled dune_aux fmt
   fi
 }
 
